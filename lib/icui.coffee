@@ -114,13 +114,7 @@ do ($ = jQuery) ->
   
   class TopLevel extends Option
   
-    clone: ->
-      console.log @parent, @parent.children, @parent.children.length
-      super
-  
-    destroyable: -> 
-      console.log @parent
-      @parent.children.length > 2
+    destroyable: -> @parent.children.length > 2
   
     defaults: ->
       @data.type = 'rtimes'
@@ -161,7 +155,6 @@ do ($ = jQuery) ->
         else
           @data.type = @data.type.replace /^r/, 'ex'
       ss.last().change (e) =>
-        console.log e.target.value
         if e.target.value == 'dates'
           if @data.type.match /^r/
             @data.type = 'rtimes'
@@ -249,7 +242,6 @@ do ($ = jQuery) ->
         @data.rule_type = e.target.value
         @children = [new Validation @]
         @triggerRender()
-        console.log @data
       $el.append super
       $el
     
@@ -447,12 +439,9 @@ do ($ = jQuery) ->
       try
         @root = new Root $el, JSON.parse $el.val()
       catch e
-        console.log e, $el.val()
         @root = new Root $el
       $el.parent('form').on 'submit', (e) =>
         $el.val JSON.stringify @getData()
-        console.log $el.parent('form')
-        e.preventDefault()
       $el.after @root.render()
   
     getData: ->
