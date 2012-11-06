@@ -1,0 +1,25 @@
+div.icui {
+    width: 30em;
+    position: relative;
+}
+
+.icui .btn {
+    cursor: pointer;
+}
+
+.icui .clone, .icui .destroy {
+    position: absolute;
+    right: 1em;
+}
+.icui .destroy {
+    right: 0em;
+}
+
+
+div.icui>div div {
+    margin-left: 1em;
+}
+
+div.icui>div:nth-child(n+1) {
+    margin-top: 1em;
+}
