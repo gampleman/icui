@@ -52,4 +52,4 @@ Currently ICUI doesn't support the rules and validations that have higher resolu
 Development and Extension
 -------------------------
 
-The library is fairly easy to extend. It is written in OO CofeeScript. Extending usually involves subclassing the `Option` class and than modifying the parent class to create the instance of the child.
+The library is fairly easy to extend. It is written in OO CofeeScript. Extending usually involves subclassing the `Option` class and than modifying the parent class to create the instance of the child. For details see the [annotated source code](http://about.gampleman.eu/icui/docs/icui.html).
