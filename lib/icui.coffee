@@ -592,13 +592,19 @@ do ($ = jQuery) ->
   # hierarchy and also setting up the form to retrieve the correct
   # representation.
   class ICUI
-    constructor: ($el) ->
-      try
-        @root = new Root $el, JSON.parse $el.val()
+    constructor: ($el, opts) ->
+      data = try 
+        JSON.parse($el.val()) 
       catch e
-        @root = new Root $el
-      $el.parent('form').on 'submit', (e) =>
-        $el.val JSON.stringify @getData()
+        null
+      @root = new Root $el, data
+      $el.parents('form').on 'submit', (e) =>
+        if opts['submit']
+          opts.submit(@getData())
+          e.preventDefault()
+          return false
+        else
+          $el.val JSON.stringify @getData()
       $el.after @root.render()
   
     getData: ->
@@ -606,6 +612,9 @@ do ($ = jQuery) ->
 
   # The jQuery Plugin
   # -----------------
-  $.fn.icui = ->
+  # Aceepts an options object where future configuration can go in.
+  # Currently suports only a 'submit' key, which is a function called
+  # on submitting the form.
+  $.fn.icui = (opts = {}) ->
     @.each ->
-      new ICUI $(@)
+      new ICUI $(@), opts
