@@ -177,6 +177,7 @@ do ($ = jQuery) ->
   #        `- Rule +-
   #           `- Validation +-
   #              |- Count
+  #              |- Until
   #              |- Day +-
   #              |- DayOfWeek +-
   #              |- DayOfMonth +-
@@ -299,16 +300,24 @@ do ($ = jQuery) ->
     fromData: (d)->
       @data.rule_type = d.rule_type
       @data.interval = d.interval
+      if d.count
+        @children.push new Validation @, {type: 'count', value: d.count}
+      if d.until
+        @children.push new Validation @, {type: 'until', value: d.until}
       for k, v of d.validations
         @children.push new Validation @, {type: k, value: v}
   
     getData: ->
       validations = {}
-      for child in @children
+      for child in @children when child.data.type isnt 'count' and child.data.type isnt 'until'
         for k,v of child.getData()
           validations[k] = v
-      {rule_type: @data.rule_type, interval: @data.interval, validations}
-    
+      h = {rule_type: @data.rule_type, interval: @data.interval, validations}
+      for child in @children when child.data.type is 'count' or child.data.type is 'until'
+        for k,v of child.getData()
+          h[k] = v
+      h
+      
     render: ->
       $el = $("""
         <div class="Rule">
@@ -343,6 +352,7 @@ do ($ = jQuery) ->
       @data.type = d.type
       switch d.type
         when 'count' then @children.push new Count @, d.value
+        when 'until' then @children.push new Until @, d.value
         when 'day'
           for v in d.value
             @children.push new Day @, v
@@ -350,11 +360,28 @@ do ($ = jQuery) ->
           for k,vals of d.value
             for v in vals
               @children.push new DayOfWeek @, {nth: v, day: k}
-  
+        else
+          for v in d.value
+            klass = @choices(d.type)
+            c = new klass @, v
+            @children.push c
+    
+    choices: (v) ->
+      {
+        count: Count
+        until: Until
+        day:   Day
+        day_of_week: DayOfWeek
+        day_of_month: DayOfMonth
+        day_of_year: DayOfYear
+        offset_from_pascha: OffsetFromPascha
+      }[v]
+    
     getData: ->
       key = @data.type
       value = switch key
         when 'count' then @children[0].getData()
+        when 'until' then @children[0].getData()
         when 'day_of_week'
           obj = {}
           for child in @children
@@ -366,12 +393,14 @@ do ($ = jQuery) ->
       obj = {}
       obj[key] = value
       obj
-    
+      
+    destroyable: -> true
     render: ->
       str = """
       <div class="Validation">
         #{if @parent.children.indexOf(@) > 0 then "and if" else "If"} <select>
           #{Helpers.option "count", 'event occured less than', @data.type}
+          #{Helpers.option "until", 'event is before', @data.type}
           #{Helpers.option "day", 'is this day of the week', @data.type}"""
       if @parent.data.rule_type in ["IceCube::YearlyRule", "IceCube::MonthlyRule"]
         str += Helpers.option "day_of_week", 'is this day of the nth week', @data.type 
@@ -385,13 +414,15 @@ do ($ = jQuery) ->
       """
       $el = $(str)
       $el.find('select').change (e) =>
-        switch e.target.value
-          when 'count' then @children = [new Count @]
-          when 'day' then @children = [new Day @]
-          when 'day_of_week' then @children = [new DayOfWeek @]
-          when 'day_of_month' then @children = [new DayOfMonth @]
-          when 'day_of_year' then @children = [new DayOfYear @]
-          when 'offset_from_pascha' then @children = [new OffsetFromPascha @]
+        # switch e.target.value
+        #          when 'count' then @children = [new Count @]
+        #          when 'day' then @children = [new Day @]
+        #          when 'day_of_week' then @children = [new DayOfWeek @]
+        #          when 'day_of_month' then @children = [new DayOfMonth @]
+        #          when 'day_of_year' then @children = [new DayOfYear @]
+        #          when 'offset_from_pascha' then @children = [new OffsetFromPascha @]
+        klass = @choices(e.target.value)
+        @children = [new klass @]
         @data.type = e.target.value
         @triggerRender()
       $el.append super
@@ -431,6 +462,15 @@ do ($ = jQuery) ->
         <input type="number" value=#{@data.value} /> times.
       </div>
       """
+  # Until
+  # -----
+  # Until will repeat the event until a specified date.
+  class Until extends DatePicker
+    getData: -> @data.time
+    clonable: -> false
+    destroyable: -> false
+  
+
   # Day of Month
   # ------------
   # Day of month filters out days that are not the nth day of the month.
@@ -526,8 +566,10 @@ do ($ = jQuery) ->
   # Orthodox celebration of Easter, Pascha.
   class OffsetFromPascha extends Option
     getData: -> @data.value
-    fromData: (d) -> @data.value = d
     defaults: -> @data.value = 0
+    
+    fromData: (d) -> @data.value = d
+    
     render: ->
       str = """
       <div class="OffsetFromPascha">
