@@ -43,7 +43,7 @@ do ($ = jQuery) ->
     # optionally be a function, otherwise it compare the third argument 
     # with the first and if equal mark the option as selected.
     option: (value, name, varOrFunc) ->
-      if typeof varOrFunc == 'Function'
+      if typeof varOrFunc == 'function'
         selected = varOrFunc(value)
       else
         selected = varOrFunc == value
@@ -192,12 +192,13 @@ do ($ = jQuery) ->
   
     fromData: (d) ->
       @data.type = d.type
-      if @data.type.match /times$/  
+      if @data.type.match /times$/
         for v in d.values
           @children.push new DatePicker @, v
       else
         for v in d.values
           @children.push new Rule @, v
+          
     getData: ->
       if @data.type.match /times$/
         values = (child.getData().time for child in @children)
@@ -210,11 +211,11 @@ do ($ = jQuery) ->
     render: -> 
       $el = $("""
     <div class="toplevel">Event <select>
-      #{Helpers.option 1, "occurs", -> @data.type.match /^r/}
-      #{Helpers.option -1, "doesn't occur", -> @data.type.match /^ex/}
+      #{Helpers.option 1, "occurs", => @data.type.match /^r/}
+      #{Helpers.option -1, "doesn't occur", => @data.type.match /^ex/}
     </select> on <select>
-      #{Helpers.option 'dates', "specific dates", -> @data.type.match /times$/}
-      #{Helpers.option 'rule', "every", -> @data.type.match /rules$/}
+      #{Helpers.option 'dates', "specific dates", => @data.type.match /times$/}
+      #{Helpers.option 'rules', "every", => @data.type.match /rules$/}
     </select>
     </div>
     """)
@@ -249,10 +250,9 @@ do ($ = jQuery) ->
   # user interface, however we could probably easily extend this to use
   # something like jQuery UI.
   class DatePicker extends Option
-    defaults: ->
-      @data.time ?= new Date
+    defaults: -> @data.time ?= new Date
     
-    fromData: (d) ->  @data.time = Helpers.dateFromString d
+    fromData: (d) -> @data.time = Helpers.dateFromString d
     
     getData: -> @data
     render: -> 
@@ -509,8 +509,8 @@ do ($ = jQuery) ->
       <div class="DayOfYear">
         <input type="number" value=#{Math.abs @data.value} /> day from the 
         <select>
-          #{Helpers.option '+', 'beggening', -> @data.value >= 0}
-          #{Helpers.option '-', 'end', -> @data.value < 0}
+          #{Helpers.option '+', 'beggening', => @data.value >= 0}
+          #{Helpers.option '-', 'end', => @data.value < 0}
         </select> of the year.</div>
       """
       $el = $ str
@@ -533,8 +533,8 @@ do ($ = jQuery) ->
       <div class="OffsetFromPascha">
         <input type="number" value=#{Math.abs @data.value} /> days 
         <select>
-          #{Helpers.option '+', 'after', -> @data.value >= 0}
-          #{Helpers.option '-', 'before', -> @data.value < 0}
+          #{Helpers.option '+', 'after', => @data.value >= 0}
+          #{Helpers.option '-', 'before', => @data.value < 0}
         </select> Pascha.</div>
       """
       $el = $ str
