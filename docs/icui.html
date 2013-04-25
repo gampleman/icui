@@ -29,7 +29,7 @@ so as to be able to avoid actual initialization.</p>             </td>          
 case when to add the <code>selected</code> attribute. The third argument can
 optionally be a function, otherwise it compare the third argument 
 with the first and if equal mark the option as selected.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">option: </span><span class="nf">(value, name, varOrFunc) -&gt;</span>
-      <span class="k">if</span> <span class="k">typeof</span> <span class="nx">varOrFunc</span> <span class="o">==</span> <span class="s">&#39;Function&#39;</span>
+      <span class="k">if</span> <span class="k">typeof</span> <span class="nx">varOrFunc</span> <span class="o">==</span> <span class="s">&#39;function&#39;</span>
         <span class="nv">selected = </span><span class="nx">varOrFunc</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
       <span class="k">else</span>
         <span class="nv">selected = </span><span class="nx">varOrFunc</span> <span class="o">==</span> <span class="nx">value</span>
@@ -43,9 +43,12 @@ with the first and if equal mark the option as selected.</p>             </td>  
     
     <span class="nv">daysOfTheWeek: </span><span class="p">[</span><span class="s">&quot;Sunday&quot;</span><span class="p">,</span> <span class="s">&quot;Monday&quot;</span><span class="p">,</span> <span class="s">&quot;Tuesday&quot;</span><span class="p">,</span> <span class="s">&quot;Wednesday&quot;</span><span class="p">,</span> <span class="s">&quot;Thursday&quot;</span><span class="p">,</span> <span class="s">&quot;Friday&quot;</span><span class="p">,</span> <span class="s">&quot;Saturday&quot;</span><span class="p">]</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>THis is a wrapper for the most ridicilous API in probably the whole of
 JavaScript.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">dateFromString: </span><span class="nf">(str) -&gt;</span>
-      <span class="nv">d = </span><span class="k">new</span> <span class="nb">Date</span>
-      <span class="nx">d</span><span class="p">.</span><span class="nx">setTime</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">str</span>
-      <span class="nx">d</span>
+      <span class="p">[</span><span class="nx">date</span><span class="p">,</span> <span class="nx">time</span><span class="p">]</span> <span class="o">=</span> <span class="nx">str</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="sr">/[\sT]/</span><span class="p">)</span>
+      <span class="p">[</span><span class="nx">y</span><span class="p">,</span> <span class="nx">m</span><span class="p">,</span> <span class="nx">d</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">parseInt</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="k">for</span> <span class="nx">t</span> <span class="k">in</span> <span class="nx">date</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s">&#39;-&#39;</span><span class="p">))</span>
+      <span class="p">[</span><span class="nx">h</span><span class="p">,</span> <span class="nx">min</span><span class="p">,</span> <span class="nx">rest</span><span class="p">...]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">parseInt</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="k">for</span> <span class="nx">t</span> <span class="k">in</span> <span class="nx">time</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">))</span>
+      <span class="nv">m = </span><span class="k">if</span> <span class="nx">m</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">then</span> <span class="nx">m</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">11</span>
+      <span class="nv">tz = </span><span class="p">(</span><span class="k">new</span> <span class="nb">Date</span><span class="p">).</span><span class="nx">getTimezoneOffset</span><span class="p">()</span>
+      <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="nb">Date</span><span class="p">.</span><span class="nx">UTC</span><span class="p">(</span><span class="nx">y</span><span class="p">,</span> <span class="nx">m</span><span class="p">,</span> <span class="nx">d</span><span class="p">,</span> <span class="nx">h</span><span class="p">,</span> <span class="nx">min</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
   </pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <h2>The Base Class</h2>
 
 <p>Option is the class from which nearly all other classes in ICUI
@@ -131,6 +134,7 @@ to add or remove dates or rules.</p>
    `- Rule +-
       `- Validation +-
          |- Count
+         |- Until
          |- Day +-
          |- DayOfWeek +-
          |- DayOfMonth +-
@@ -146,12 +150,13 @@ to add or remove dates or rules.</p>
   
     <span class="nv">fromData: </span><span class="nf">(d) -&gt;</span>
       <span class="vi">@data.type = </span><span class="nx">d</span><span class="p">.</span><span class="nx">type</span>
-      <span class="k">if</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">type</span><span class="p">.</span><span class="nx">match</span> <span class="sr">/times$/</span>  
+      <span class="k">if</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">type</span><span class="p">.</span><span class="nx">match</span> <span class="sr">/times$/</span>
         <span class="k">for</span> <span class="nx">v</span> <span class="k">in</span> <span class="nx">d</span><span class="p">.</span><span class="nx">values</span>
           <span class="nx">@children</span><span class="p">.</span><span class="nx">push</span> <span class="k">new</span> <span class="nx">DatePicker</span> <span class="nx">@</span><span class="p">,</span> <span class="nx">v</span>
       <span class="k">else</span>
         <span class="k">for</span> <span class="nx">v</span> <span class="k">in</span> <span class="nx">d</span><span class="p">.</span><span class="nx">values</span>
           <span class="nx">@children</span><span class="p">.</span><span class="nx">push</span> <span class="k">new</span> <span class="nx">Rule</span> <span class="nx">@</span><span class="p">,</span> <span class="nx">v</span>
+          
     <span class="nv">getData: </span><span class="o">-&gt;</span>
       <span class="k">if</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">type</span><span class="p">.</span><span class="nx">match</span> <span class="sr">/times$/</span>
         <span class="nv">values = </span><span class="p">(</span><span class="nx">child</span><span class="p">.</span><span class="nx">getData</span><span class="p">().</span><span class="nx">time</span> <span class="k">for</span> <span class="nx">child</span> <span class="k">in</span> <span class="nx">@children</span><span class="p">)</span>
@@ -164,11 +169,11 @@ to add or remove dates or rules.</p>
     <span class="nv">render: </span><span class="o">-&gt;</span> 
       <span class="nv">$el = </span><span class="nx">$</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
 <span class="s">    &lt;div class=&quot;toplevel&quot;&gt;Event &lt;select&gt;</span>
-<span class="s">      </span><span class="si">#{</span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&quot;occurs&quot;</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">type</span><span class="p">.</span><span class="nx">match</span> <span class="sr">/^r/</span><span class="si">}</span><span class="s"></span>
-<span class="s">      </span><span class="si">#{</span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;doesn&#39;t occur&quot;</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">type</span><span class="p">.</span><span class="nx">match</span> <span class="sr">/^ex/</span><span class="si">}</span><span class="s"></span>
+<span class="s">      </span><span class="si">#{</span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&quot;occurs&quot;</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">type</span><span class="p">.</span><span class="nx">match</span> <span class="sr">/^r/</span><span class="si">}</span><span class="s"></span>
+<span class="s">      </span><span class="si">#{</span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;doesn&#39;t occur&quot;</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">type</span><span class="p">.</span><span class="nx">match</span> <span class="sr">/^ex/</span><span class="si">}</span><span class="s"></span>
 <span class="s">    &lt;/select&gt; on &lt;select&gt;</span>
-<span class="s">      </span><span class="si">#{</span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="s">&#39;dates&#39;</span><span class="p">,</span> <span class="s">&quot;specific dates&quot;</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">type</span><span class="p">.</span><span class="nx">match</span> <span class="sr">/times$/</span><span class="si">}</span><span class="s"></span>
-<span class="s">      </span><span class="si">#{</span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="s">&#39;rule&#39;</span><span class="p">,</span> <span class="s">&quot;every&quot;</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">type</span><span class="p">.</span><span class="nx">match</span> <span class="sr">/rules$/</span><span class="si">}</span><span class="s"></span>
+<span class="s">      </span><span class="si">#{</span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="s">&#39;dates&#39;</span><span class="p">,</span> <span class="s">&quot;specific dates&quot;</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">type</span><span class="p">.</span><span class="nx">match</span> <span class="sr">/times$/</span><span class="si">}</span><span class="s"></span>
+<span class="s">      </span><span class="si">#{</span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="s">&#39;rules&#39;</span><span class="p">,</span> <span class="s">&quot;every&quot;</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">type</span><span class="p">.</span><span class="nx">match</span> <span class="sr">/rules$/</span><span class="si">}</span><span class="s"></span>
 <span class="s">    &lt;/select&gt;</span>
 <span class="s">    &lt;/div&gt;</span>
 <span class="s">    &quot;&quot;&quot;</span><span class="p">)</span>
@@ -200,10 +205,9 @@ to add or remove dates or rules.</p>
 time. Currently it relies on HTML5 attributes to provide most of the
 user interface, however we could probably easily extend this to use
 something like jQuery UI.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">class</span> <span class="nx">DatePicker</span> <span class="k">extends</span> <span class="nx">Option</span>
-    <span class="nv">defaults: </span><span class="o">-&gt;</span>
-      <span class="nx">@data</span><span class="p">.</span><span class="nx">time</span> <span class="o">?=</span> <span class="k">new</span> <span class="nb">Date</span>
+    <span class="nv">defaults: </span><span class="o">-&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">time</span> <span class="o">?=</span> <span class="k">new</span> <span class="nb">Date</span>
     
-    <span class="nv">fromData: </span><span class="nf">(d) -&gt;</span>  <span class="vi">@data.time = </span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">dateFromString</span> <span class="nx">d</span>
+    <span class="nv">fromData: </span><span class="nf">(d) -&gt;</span> <span class="vi">@data.time = </span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">dateFromString</span> <span class="nx">d</span>
     
     <span class="nv">getData: </span><span class="o">-&gt;</span> <span class="nx">@data</span>
     <span class="nv">render: </span><span class="o">-&gt;</span> 
@@ -246,16 +250,24 @@ year.</p>             </td>             <td class="code">               <div cla
     <span class="nv">fromData: </span><span class="nf">(d)-&gt;</span>
       <span class="vi">@data.rule_type = </span><span class="nx">d</span><span class="p">.</span><span class="nx">rule_type</span>
       <span class="vi">@data.interval = </span><span class="nx">d</span><span class="p">.</span><span class="nx">interval</span>
+      <span class="k">if</span> <span class="nx">d</span><span class="p">.</span><span class="nx">count</span>
+        <span class="nx">@children</span><span class="p">.</span><span class="nx">push</span> <span class="k">new</span> <span class="nx">Validation</span> <span class="nx">@</span><span class="p">,</span> <span class="p">{</span><span class="nv">type: </span><span class="s">&#39;count&#39;</span><span class="p">,</span> <span class="nv">value: </span><span class="nx">d</span><span class="p">.</span><span class="nx">count</span><span class="p">}</span>
+      <span class="k">if</span> <span class="nx">d</span><span class="p">.</span><span class="nx">until</span>
+        <span class="nx">@children</span><span class="p">.</span><span class="nx">push</span> <span class="k">new</span> <span class="nx">Validation</span> <span class="nx">@</span><span class="p">,</span> <span class="p">{</span><span class="nv">type: </span><span class="s">&#39;until&#39;</span><span class="p">,</span> <span class="nv">value: </span><span class="nx">d</span><span class="p">.</span><span class="nx">until</span><span class="p">}</span>
       <span class="k">for</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">v</span> <span class="k">of</span> <span class="nx">d</span><span class="p">.</span><span class="nx">validations</span>
         <span class="nx">@children</span><span class="p">.</span><span class="nx">push</span> <span class="k">new</span> <span class="nx">Validation</span> <span class="nx">@</span><span class="p">,</span> <span class="p">{</span><span class="nv">type: </span><span class="nx">k</span><span class="p">,</span> <span class="nv">value: </span><span class="nx">v</span><span class="p">}</span>
   
     <span class="nv">getData: </span><span class="o">-&gt;</span>
       <span class="nv">validations = </span><span class="p">{}</span>
-      <span class="k">for</span> <span class="nx">child</span> <span class="k">in</span> <span class="nx">@children</span>
+      <span class="k">for</span> <span class="nx">child</span> <span class="k">in</span> <span class="nx">@children</span> <span class="k">when</span> <span class="nx">child</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">type</span> <span class="o">isnt</span> <span class="s">&#39;count&#39;</span> <span class="o">and</span> <span class="nx">child</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">type</span> <span class="o">isnt</span> <span class="s">&#39;until&#39;</span>
         <span class="k">for</span> <span class="nx">k</span><span class="p">,</span><span class="nx">v</span> <span class="k">of</span> <span class="nx">child</span><span class="p">.</span><span class="nx">getData</span><span class="p">()</span>
           <span class="nx">validations</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span> <span class="o">=</span> <span class="nx">v</span>
-      <span class="p">{</span><span class="nv">rule_type: </span><span class="nx">@data</span><span class="p">.</span><span class="nx">rule_type</span><span class="p">,</span> <span class="nv">interval: </span><span class="nx">@data</span><span class="p">.</span><span class="nx">interval</span><span class="p">,</span> <span class="nx">validations</span><span class="p">}</span>
-    
+      <span class="nv">h = </span><span class="p">{</span><span class="nv">rule_type: </span><span class="nx">@data</span><span class="p">.</span><span class="nx">rule_type</span><span class="p">,</span> <span class="nv">interval: </span><span class="nx">@data</span><span class="p">.</span><span class="nx">interval</span><span class="p">,</span> <span class="nx">validations</span><span class="p">}</span>
+      <span class="k">for</span> <span class="nx">child</span> <span class="k">in</span> <span class="nx">@children</span> <span class="k">when</span> <span class="nx">child</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">type</span> <span class="o">is</span> <span class="s">&#39;count&#39;</span> <span class="o">or</span> <span class="nx">child</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">type</span> <span class="o">is</span> <span class="s">&#39;until&#39;</span>
+        <span class="k">for</span> <span class="nx">k</span><span class="p">,</span><span class="nx">v</span> <span class="k">of</span> <span class="nx">child</span><span class="p">.</span><span class="nx">getData</span><span class="p">()</span>
+          <span class="nx">h</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span> <span class="o">=</span> <span class="nx">v</span>
+      <span class="nx">h</span>
+      
     <span class="nv">render: </span><span class="o">-&gt;</span>
       <span class="nv">$el = </span><span class="nx">$</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
 <span class="s">        &lt;div class=&quot;Rule&quot;&gt;</span>
@@ -288,6 +300,7 @@ and also agregates the arguments to the validation.</p>             </td>       
       <span class="vi">@data.type = </span><span class="nx">d</span><span class="p">.</span><span class="nx">type</span>
       <span class="k">switch</span> <span class="nx">d</span><span class="p">.</span><span class="nx">type</span>
         <span class="k">when</span> <span class="s">&#39;count&#39;</span> <span class="k">then</span> <span class="nx">@children</span><span class="p">.</span><span class="nx">push</span> <span class="k">new</span> <span class="nx">Count</span> <span class="nx">@</span><span class="p">,</span> <span class="nx">d</span><span class="p">.</span><span class="nx">value</span>
+        <span class="k">when</span> <span class="s">&#39;until&#39;</span> <span class="k">then</span> <span class="nx">@children</span><span class="p">.</span><span class="nx">push</span> <span class="k">new</span> <span class="nx">Until</span> <span class="nx">@</span><span class="p">,</span> <span class="nx">d</span><span class="p">.</span><span class="nx">value</span>
         <span class="k">when</span> <span class="s">&#39;day&#39;</span>
           <span class="k">for</span> <span class="nx">v</span> <span class="k">in</span> <span class="nx">d</span><span class="p">.</span><span class="nx">value</span>
             <span class="nx">@children</span><span class="p">.</span><span class="nx">push</span> <span class="k">new</span> <span class="nx">Day</span> <span class="nx">@</span><span class="p">,</span> <span class="nx">v</span>
@@ -295,11 +308,28 @@ and also agregates the arguments to the validation.</p>             </td>       
           <span class="k">for</span> <span class="nx">k</span><span class="p">,</span><span class="nx">vals</span> <span class="k">of</span> <span class="nx">d</span><span class="p">.</span><span class="nx">value</span>
             <span class="k">for</span> <span class="nx">v</span> <span class="k">in</span> <span class="nx">vals</span>
               <span class="nx">@children</span><span class="p">.</span><span class="nx">push</span> <span class="k">new</span> <span class="nx">DayOfWeek</span> <span class="nx">@</span><span class="p">,</span> <span class="p">{</span><span class="nv">nth: </span><span class="nx">v</span><span class="p">,</span> <span class="nv">day: </span><span class="nx">k</span><span class="p">}</span>
-  
+        <span class="k">else</span>
+          <span class="k">for</span> <span class="nx">v</span> <span class="k">in</span> <span class="nx">d</span><span class="p">.</span><span class="nx">value</span>
+            <span class="nv">klass = </span><span class="nx">@choices</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">type</span><span class="p">)</span>
+            <span class="nv">c = </span><span class="k">new</span> <span class="nx">klass</span> <span class="nx">@</span><span class="p">,</span> <span class="nx">v</span>
+            <span class="nx">@children</span><span class="p">.</span><span class="nx">push</span> <span class="nx">c</span>
+    
+    <span class="nv">choices: </span><span class="nf">(v) -&gt;</span>
+      <span class="p">{</span>
+        <span class="nv">count: </span><span class="nx">Count</span>
+        <span class="nv">until: </span><span class="nx">Until</span>
+        <span class="nv">day: </span>  <span class="nx">Day</span>
+        <span class="nv">day_of_week: </span><span class="nx">DayOfWeek</span>
+        <span class="nv">day_of_month: </span><span class="nx">DayOfMonth</span>
+        <span class="nv">day_of_year: </span><span class="nx">DayOfYear</span>
+        <span class="nv">offset_from_pascha: </span><span class="nx">OffsetFromPascha</span>
+      <span class="p">}[</span><span class="nx">v</span><span class="p">]</span>
+    
     <span class="nv">getData: </span><span class="o">-&gt;</span>
       <span class="nv">key = </span><span class="nx">@data</span><span class="p">.</span><span class="nx">type</span>
       <span class="nv">value = </span><span class="k">switch</span> <span class="nx">key</span>
         <span class="k">when</span> <span class="s">&#39;count&#39;</span> <span class="k">then</span> <span class="nx">@children</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">getData</span><span class="p">()</span>
+        <span class="k">when</span> <span class="s">&#39;until&#39;</span> <span class="k">then</span> <span class="nx">@children</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">getData</span><span class="p">()</span>
         <span class="k">when</span> <span class="s">&#39;day_of_week&#39;</span>
           <span class="nv">obj = </span><span class="p">{}</span>
           <span class="k">for</span> <span class="nx">child</span> <span class="k">in</span> <span class="nx">@children</span>
@@ -311,12 +341,14 @@ and also agregates the arguments to the validation.</p>             </td>       
       <span class="nv">obj = </span><span class="p">{}</span>
       <span class="nx">obj</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span>
       <span class="nx">obj</span>
-    
+      
+    <span class="nv">destroyable: </span><span class="o">-&gt;</span> <span class="kc">true</span>
     <span class="nv">render: </span><span class="o">-&gt;</span>
       <span class="nv">str = </span><span class="s">&quot;&quot;&quot;</span>
 <span class="s">      &lt;div class=&quot;Validation&quot;&gt;</span>
 <span class="s">        </span><span class="si">#{</span><span class="k">if</span> <span class="nx">@parent</span><span class="p">.</span><span class="nx">children</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">@</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">then</span> <span class="s">&quot;and if&quot;</span> <span class="k">else</span> <span class="s">&quot;If&quot;</span><span class="si">}</span><span class="s"> &lt;select&gt;</span>
 <span class="s">          </span><span class="si">#{</span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="s">&quot;count&quot;</span><span class="p">,</span> <span class="s">&#39;event occured less than&#39;</span><span class="p">,</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">type</span><span class="si">}</span><span class="s"></span>
+<span class="s">          </span><span class="si">#{</span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="s">&quot;until&quot;</span><span class="p">,</span> <span class="s">&#39;event is before&#39;</span><span class="p">,</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">type</span><span class="si">}</span><span class="s"></span>
 <span class="s">          </span><span class="si">#{</span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="s">&quot;day&quot;</span><span class="p">,</span> <span class="s">&#39;is this day of the week&#39;</span><span class="p">,</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">type</span><span class="si">}</span><span class="s">&quot;&quot;&quot;</span>
       <span class="k">if</span> <span class="nx">@parent</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">rule_type</span> <span class="k">in</span> <span class="p">[</span><span class="s">&quot;IceCube::YearlyRule&quot;</span><span class="p">,</span> <span class="s">&quot;IceCube::MonthlyRule&quot;</span><span class="p">]</span>
         <span class="nx">str</span> <span class="o">+=</span> <span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="s">&quot;day_of_week&quot;</span><span class="p">,</span> <span class="s">&#39;is this day of the nth week&#39;</span><span class="p">,</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">type</span> 
@@ -329,18 +361,18 @@ and also agregates the arguments to the validation.</p>             </td>       
 <span class="s">      &lt;/div&gt;</span>
 <span class="s">      &quot;&quot;&quot;</span>
       <span class="nv">$el = </span><span class="nx">$</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span>
-      <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;select&#39;</span><span class="p">).</span><span class="nx">change</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span>
-        <span class="k">switch</span> <span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span>
-          <span class="k">when</span> <span class="s">&#39;count&#39;</span> <span class="k">then</span> <span class="vi">@children = </span><span class="p">[</span><span class="k">new</span> <span class="nx">Count</span> <span class="nx">@</span><span class="p">]</span>
-          <span class="k">when</span> <span class="s">&#39;day&#39;</span> <span class="k">then</span> <span class="vi">@children = </span><span class="p">[</span><span class="k">new</span> <span class="nx">Day</span> <span class="nx">@</span><span class="p">]</span>
-          <span class="k">when</span> <span class="s">&#39;day_of_week&#39;</span> <span class="k">then</span> <span class="vi">@children = </span><span class="p">[</span><span class="k">new</span> <span class="nx">DayOfWeek</span> <span class="nx">@</span><span class="p">]</span>
-          <span class="k">when</span> <span class="s">&#39;day_of_month&#39;</span> <span class="k">then</span> <span class="vi">@children = </span><span class="p">[</span><span class="k">new</span> <span class="nx">DayOfMonth</span> <span class="nx">@</span><span class="p">]</span>
-          <span class="k">when</span> <span class="s">&#39;day_of_year&#39;</span> <span class="k">then</span> <span class="vi">@children = </span><span class="p">[</span><span class="k">new</span> <span class="nx">DayOfYear</span> <span class="nx">@</span><span class="p">]</span>
-          <span class="k">when</span> <span class="s">&#39;offset_from_pascha&#39;</span> <span class="k">then</span> <span class="vi">@children = </span><span class="p">[</span><span class="k">new</span> <span class="nx">OffsetFromPascha</span> <span class="nx">@</span><span class="p">]</span>
+      <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;select&#39;</span><span class="p">).</span><span class="nx">change</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span></pre></div>             </td>           </tr>                               <tr id="section-25">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-25">&#182;</a>               </div>               <p>switch e.target.value
+         when 'count' then @children = [new Count @]
+         when 'day' then @children = [new Day @]
+         when 'day<em>of</em>week' then @children = [new DayOfWeek @]
+         when 'day<em>of</em>month' then @children = [new DayOfMonth @]
+         when 'day<em>of</em>year' then @children = [new DayOfYear @]
+         when 'offset<em>from</em>pascha' then @children = [new OffsetFromPascha @]</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="nv">klass = </span><span class="nx">@choices</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span>
+        <span class="vi">@children = </span><span class="p">[</span><span class="k">new</span> <span class="nx">klass</span> <span class="nx">@</span><span class="p">]</span>
         <span class="vi">@data.type = </span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span>
         <span class="nx">@triggerRender</span><span class="p">()</span>
       <span class="nx">$el</span><span class="p">.</span><span class="nx">append</span> <span class="k">super</span>
-  </pre></div>             </td>           </tr>                               <tr id="section-25">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-25">&#182;</a>               </div>               <h1>Validation Types</h1>
+  </pre></div>             </td>           </tr>                               <tr id="section-26">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-26">&#182;</a>               </div>               <h1>Validation Types</h1>
 
 <p>we have a seperate class for each type of validation that the
 user can pick with <code>Validation</code>.</p>
@@ -351,15 +383,15 @@ user can pick with <code>Validation</code>.</p>
 validation types (typically those with a single parameter). </p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">class</span> <span class="nx">ValidationInstance</span> <span class="k">extends</span> <span class="nx">Option</span>
     <span class="nv">defaults: </span><span class="o">-&gt;</span> <span class="vi">@data.value = </span><span class="nx">@default</span>
     <span class="nv">fromData: </span><span class="nf">(d) -&gt;</span> <span class="vi">@data.value = </span><span class="nx">d</span>
-    <span class="nv">getData: </span><span class="o">-&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span></pre></div>             </td>           </tr>                               <tr id="section-26">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-26">&#182;</a>               </div>               <p><code>dataTransformer</code> is what transforms the string representation
+    <span class="nv">getData: </span><span class="o">-&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span></pre></div>             </td>           </tr>                               <tr id="section-27">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-27">&#182;</a>               </div>               <p><code>dataTransformer</code> is what transforms the string representation
 of the UI into a js datastructure. It is by default <code>parseInt</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">dataTransformer: </span><span class="nb">parseInt</span>
-    <span class="nv">default: </span><span class="mi">1</span></pre></div>             </td>           </tr>                               <tr id="section-27">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-27">&#182;</a>               </div>               <p>The <code>render</code> implementation relies on a <code>html</code> method that returns
+    <span class="nv">default: </span><span class="mi">1</span></pre></div>             </td>           </tr>                               <tr id="section-28">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-28">&#182;</a>               </div>               <p>The <code>render</code> implementation relies on a <code>html</code> method that returns
 an HTML string.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">render: </span><span class="o">-&gt;</span>
       <span class="nv">$el = </span><span class="nx">$</span> <span class="nx">@html</span><span class="p">()</span>
       <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;input,select&#39;</span><span class="p">).</span><span class="nx">change</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span>
         <span class="vi">@data.value = </span><span class="nx">@dataTransformer</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span>
       <span class="nx">$el</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="k">super</span><span class="p">)</span>
-      <span class="nx">$el</span></pre></div>             </td>           </tr>                               <tr id="section-28">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-28">&#182;</a>               </div>               <h2>Count</h2>
+      <span class="nx">$el</span></pre></div>             </td>           </tr>                               <tr id="section-29">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-29">&#182;</a>               </div>               <h2>Count</h2>
 
 <p>Count will limit the maximum times an event can repeat.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">class</span> <span class="nx">Count</span> <span class="k">extends</span> <span class="nx">ValidationInstance</span>
     <span class="nv">clonable: </span><span class="o">-&gt;</span> <span class="kc">false</span>
@@ -367,7 +399,13 @@ an HTML string.</p>             </td>             <td class="code">             
 <span class="s">      &lt;div class=&quot;Count&quot;&gt;</span>
 <span class="s">        &lt;input type=&quot;number&quot; value=</span><span class="si">#{</span><span class="nx">@data</span><span class="p">.</span><span class="nx">value</span><span class="si">}</span><span class="s"> /&gt; times.</span>
 <span class="s">      &lt;/div&gt;</span>
-<span class="s">      &quot;&quot;&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-29">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-29">&#182;</a>               </div>               <h2>Day of Month</h2>
+<span class="s">      &quot;&quot;&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-30">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-30">&#182;</a>               </div>               <h2>Until</h2>
+
+<p>Until will repeat the event until a specified date.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">class</span> <span class="nx">Until</span> <span class="k">extends</span> <span class="nx">DatePicker</span>
+    <span class="nv">getData: </span><span class="o">-&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">time</span>
+    <span class="nv">clonable: </span><span class="o">-&gt;</span> <span class="kc">false</span>
+    <span class="nv">destroyable: </span><span class="o">-&gt;</span> <span class="kc">false</span>
+  </pre></div>             </td>           </tr>                               <tr id="section-31">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-31">&#182;</a>               </div>               <h2>Day of Month</h2>
 
 <p>Day of month filters out days that are not the nth day of the month.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">class</span> <span class="nx">DayOfMonth</span> <span class="k">extends</span> <span class="nx">ValidationInstance</span>
     <span class="nv">html: </span><span class="o">-&gt;</span>
@@ -384,7 +422,7 @@ an HTML string.</p>             </td>             <td class="code">             
       <span class="nx">str</span> <span class="o">+=</span> <span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="s">&quot;-1&quot;</span><span class="p">,</span> <span class="s">&quot;last&quot;</span><span class="p">,</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
       <span class="nx">str</span> <span class="o">+=</span>  <span class="s">&quot;&quot;&quot;&lt;/select&gt; day of the month.</span>
 <span class="s">      &lt;/div&gt;</span>
-<span class="s">      &quot;&quot;&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-30">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-30">&#182;</a>               </div>               <h2>Day</h2>
+<span class="s">      &quot;&quot;&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-32">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-32">&#182;</a>               </div>               <h2>Day</h2>
 
 <p>Day let's the user filter events occuring on particular days of the
 week.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">class</span> <span class="nx">Day</span> <span class="k">extends</span> <span class="nx">ValidationInstance</span>
@@ -396,7 +434,7 @@ week.</p>             </td>             <td class="code">               <div cla
         <span class="nx">str</span> <span class="o">+=</span> <span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="nx">i</span><span class="p">.</span><span class="nx">toString</span><span class="p">(),</span> <span class="nx">day</span><span class="p">,</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span> 
       <span class="nx">str</span> <span class="o">+=</span>  <span class="s">&quot;&quot;&quot;&lt;/select&gt;</span>
 <span class="s">      &lt;/div&gt;</span>
-<span class="s">      &quot;&quot;&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-31">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-31">&#182;</a>               </div>               <h2>Day of Week</h2>
+<span class="s">      &quot;&quot;&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-33">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-33">&#182;</a>               </div>               <h2>Day of Week</h2>
 
 <p>This is the perhaps most confusing rule. It allows the user to
 specify thing like "the 3rd sunday of the month" and so on.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">class</span> <span class="nx">DayOfWeek</span> <span class="k">extends</span> <span class="nx">Option</span>
@@ -427,7 +465,7 @@ specify thing like "the 3rd sunday of the month" and so on.</p>             </td
       <span class="nx">pluralize</span><span class="p">()</span>
       <span class="nx">$el</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="k">super</span><span class="p">)</span>
       <span class="nx">$el</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-32">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-32">&#182;</a>               </div>               <h2>Day of Year</h2>
+    </pre></div>             </td>           </tr>                               <tr id="section-34">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-34">&#182;</a>               </div>               <h2>Day of Year</h2>
 
 <p>Allows to specify a particular day of the year.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">class</span> <span class="nx">DayOfYear</span> <span class="k">extends</span> <span class="nx">Option</span>
     <span class="nv">getData: </span><span class="o">-&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span>
@@ -438,8 +476,8 @@ specify thing like "the 3rd sunday of the month" and so on.</p>             </td
 <span class="s">      &lt;div class=&quot;DayOfYear&quot;&gt;</span>
 <span class="s">        &lt;input type=&quot;number&quot; value=</span><span class="si">#{</span><span class="nb">Math</span><span class="p">.</span><span class="nx">abs</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span><span class="si">}</span><span class="s"> /&gt; day from the </span>
 <span class="s">        &lt;select&gt;</span>
-<span class="s">          </span><span class="si">#{</span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="s">&#39;+&#39;</span><span class="p">,</span> <span class="s">&#39;beggening&#39;</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="si">}</span><span class="s"></span>
-<span class="s">          </span><span class="si">#{</span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="s">&#39;end&#39;</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="si">}</span><span class="s"></span>
+<span class="s">          </span><span class="si">#{</span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="s">&#39;+&#39;</span><span class="p">,</span> <span class="s">&#39;beggening&#39;</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="si">}</span><span class="s"></span>
+<span class="s">          </span><span class="si">#{</span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="s">&#39;end&#39;</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="si">}</span><span class="s"></span>
 <span class="s">        &lt;/select&gt; of the year.&lt;/div&gt;</span>
 <span class="s">      &quot;&quot;&quot;</span>
       <span class="nv">$el = </span><span class="nx">$</span> <span class="nx">str</span>
@@ -448,20 +486,22 @@ specify thing like "the 3rd sunday of the month" and so on.</p>             </td
         <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span> <span class="o">*=</span> <span class="k">if</span> <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;select&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;+&#39;</span> <span class="k">then</span> <span class="mi">1</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
       <span class="nx">$el</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="k">super</span><span class="p">)</span>
       <span class="nx">$el</span>
-      </pre></div>             </td>           </tr>                               <tr id="section-33">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-33">&#182;</a>               </div>               <h2>Offset from Pascha</h2>
+      </pre></div>             </td>           </tr>                               <tr id="section-35">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-35">&#182;</a>               </div>               <h2>Offset from Pascha</h2>
 
 <p>This class allows the user to specify dates in relation to the 
 Orthodox celebration of Easter, Pascha.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">class</span> <span class="nx">OffsetFromPascha</span> <span class="k">extends</span> <span class="nx">Option</span>
     <span class="nv">getData: </span><span class="o">-&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span>
-    <span class="nv">fromData: </span><span class="nf">(d) -&gt;</span> <span class="vi">@data.value = </span><span class="nx">d</span>
     <span class="nv">defaults: </span><span class="o">-&gt;</span> <span class="vi">@data.value = </span><span class="mi">0</span>
+    
+    <span class="nv">fromData: </span><span class="nf">(d) -&gt;</span> <span class="vi">@data.value = </span><span class="nx">d</span>
+    
     <span class="nv">render: </span><span class="o">-&gt;</span>
       <span class="nv">str = </span><span class="s">&quot;&quot;&quot;</span>
 <span class="s">      &lt;div class=&quot;OffsetFromPascha&quot;&gt;</span>
 <span class="s">        &lt;input type=&quot;number&quot; value=</span><span class="si">#{</span><span class="nb">Math</span><span class="p">.</span><span class="nx">abs</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span><span class="si">}</span><span class="s"> /&gt; days </span>
 <span class="s">        &lt;select&gt;</span>
-<span class="s">          </span><span class="si">#{</span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="s">&#39;+&#39;</span><span class="p">,</span> <span class="s">&#39;after&#39;</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="si">}</span><span class="s"></span>
-<span class="s">          </span><span class="si">#{</span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="s">&#39;before&#39;</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="si">}</span><span class="s"></span>
+<span class="s">          </span><span class="si">#{</span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="s">&#39;+&#39;</span><span class="p">,</span> <span class="s">&#39;after&#39;</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="si">}</span><span class="s"></span>
+<span class="s">          </span><span class="si">#{</span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="s">&#39;before&#39;</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="si">}</span><span class="s"></span>
 <span class="s">        &lt;/select&gt; Pascha.&lt;/div&gt;</span>
 <span class="s">      &quot;&quot;&quot;</span>
       <span class="nv">$el = </span><span class="nx">$</span> <span class="nx">str</span>
@@ -470,25 +510,33 @@ Orthodox celebration of Easter, Pascha.</p>             </td>             <td cl
         <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span> <span class="o">*=</span> <span class="k">if</span> <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;select&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;+&#39;</span> <span class="k">then</span> <span class="mi">1</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
       <span class="nx">$el</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="k">super</span><span class="p">)</span>
       <span class="nx">$el</span>
-  </pre></div>             </td>           </tr>                               <tr id="section-34">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-34">&#182;</a>               </div>               <h2>ICUI</h2>
+  </pre></div>             </td>           </tr>                               <tr id="section-36">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-36">&#182;</a>               </div>               <h2>ICUI</h2>
 
 <p>This is the class that is responsible for initializing the whole
 hierarchy and also setting up the form to retrieve the correct
 representation.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">class</span> <span class="nx">ICUI</span>
-    <span class="nv">constructor: </span><span class="nf">($el) -&gt;</span>
-      <span class="k">try</span>
-        <span class="vi">@root = </span><span class="k">new</span> <span class="nx">Root</span> <span class="nx">$el</span><span class="p">,</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">$el</span><span class="p">.</span><span class="nx">val</span><span class="p">()</span>
+    <span class="nv">constructor: </span><span class="nf">($el, opts) -&gt;</span>
+      <span class="nv">data = </span><span class="k">try</span> 
+        <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">$el</span><span class="p">.</span><span class="nx">val</span><span class="p">())</span> 
       <span class="k">catch</span> <span class="nx">e</span>
-        <span class="vi">@root = </span><span class="k">new</span> <span class="nx">Root</span> <span class="nx">$el</span>
-      <span class="nx">$el</span><span class="p">.</span><span class="nx">parent</span><span class="p">(</span><span class="s">&#39;form&#39;</span><span class="p">).</span><span class="kc">on</span> <span class="s">&#39;submit&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span>
-        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span> <span class="nx">@getData</span><span class="p">()</span>
-        <span class="k">return</span> <span class="kc">false</span>
-        <span class="nx">$el</span><span class="p">.</span><span class="nx">val</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span> <span class="nx">@getData</span><span class="p">()</span>
+        <span class="kc">null</span>
+      <span class="vi">@root = </span><span class="k">new</span> <span class="nx">Root</span> <span class="nx">$el</span><span class="p">,</span> <span class="nx">data</span>
+      <span class="nx">$el</span><span class="p">.</span><span class="nx">parents</span><span class="p">(</span><span class="s">&#39;form&#39;</span><span class="p">).</span><span class="kc">on</span> <span class="s">&#39;submit&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span>
+        <span class="k">if</span> <span class="nx">opts</span><span class="p">[</span><span class="s">&#39;submit&#39;</span><span class="p">]</span>
+          <span class="nx">opts</span><span class="p">.</span><span class="nx">submit</span><span class="p">(</span><span class="nx">@getData</span><span class="p">())</span>
+          <span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">()</span>
+          <span class="k">return</span> <span class="kc">false</span>
+        <span class="k">else</span>
+          <span class="nx">$el</span><span class="p">.</span><span class="nx">val</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span> <span class="nx">@getData</span><span class="p">()</span>
       <span class="nx">$el</span><span class="p">.</span><span class="nx">after</span> <span class="nx">@root</span><span class="p">.</span><span class="nx">render</span><span class="p">()</span>
   
     <span class="nv">getData: </span><span class="o">-&gt;</span>
-      <span class="nx">@root</span><span class="p">.</span><span class="nx">getData</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-35">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-35">&#182;</a>               </div>               <h2>The jQuery Plugin</h2>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">$.fn.icui = </span><span class="o">-&gt;</span>
+      <span class="nx">@root</span><span class="p">.</span><span class="nx">getData</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-37">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-37">&#182;</a>               </div>               <h2>The jQuery Plugin</h2>
+
+<p>Aceepts an options object where future configuration can go in.
+Currently suports only a 'submit' key, which is a function called
+on submitting the form.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">$.fn.icui = </span><span class="nf">(opts = {}) -&gt;</span>
     <span class="nx">@</span><span class="p">.</span><span class="nx">each</span> <span class="o">-&gt;</span>
-      <span class="k">new</span> <span class="nx">ICUI</span> <span class="nx">$</span><span class="p">(</span><span class="nx">@</span><span class="p">)</span>
+      <span class="k">new</span> <span class="nx">ICUI</span> <span class="nx">$</span><span class="p">(</span><span class="nx">@</span><span class="p">),</span> <span class="nx">opts</span>
 
 </pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
