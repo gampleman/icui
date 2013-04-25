@@ -61,9 +61,12 @@ do ($ = jQuery) ->
     # THis is a wrapper for the most ridicilous API in probably the whole of
     # JavaScript.
     dateFromString: (str) ->
-      d = new Date
-      d.setTime Date.parse str
-      d
+      [date, time] = str.split(/[\sT]/)
+      [y, m, d] = (parseInt(t, 10) for t in date.split('-'))
+      [h, min, rest...] = (parseInt(t, 10) for t in time.split(':'))
+      m = if m - 1 >= 0 then m - 1 else 11
+      tz = (new Date).getTimezoneOffset()
+      new Date(Date.UTC(y, m, d, h, min, 0, 0))
   
   # The Base Class
   # --------------
