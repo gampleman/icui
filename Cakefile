@@ -8,12 +8,14 @@ task "full", ->
       exec "rm lib/icui.js"
   exec "git checkout gh-pages", (e) ->
     console.log e if e
-    exec "docco -o docs lib/icui.coffee", (e) ->
+    exec "git merge master -m 'update docs'", (e) ->
       console.log e if e
-      exec "git add docs", (e) ->
-        exec "git commit -m \"Updated docs\"", (e) ->
-          exec "git checkout master", (e) ->
-            exec "rm -r docs"
+      exec "docco -o docs lib/icui.coffee", (e) ->
+        console.log e if e
+        exec "git add docs", (e) ->
+          exec "git commit -m \"Updated docs\"", (e) ->
+            exec "git checkout master", (e) ->
+              exec "rm -r docs"
 
 
 build = (cb) ->
