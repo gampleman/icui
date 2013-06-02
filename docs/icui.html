@@ -22,7 +22,7 @@ so as to be able to avoid actual initialization.</p>             </td>          
         <span class="nv">newInstance.data = </span><span class="nx">clone</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">data</span>
       <span class="k">else</span>
         <span class="nv">newInstance = </span><span class="k">new</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">constructor</span><span class="p">()</span>
-      <span class="k">for</span> <span class="nx">own</span> <span class="nx">key</span> <span class="k">of</span> <span class="nx">obj</span> <span class="k">when</span> <span class="nx">key</span> <span class="o">not</span> <span class="k">in</span> <span class="p">[</span><span class="s">&#39;parent&#39;</span><span class="p">,</span> <span class="s">&#39;data&#39;</span><span class="p">]</span> <span class="o">and</span> <span class="k">typeof</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&#39;function&#39;</span>
+      <span class="k">for</span> <span class="nx">own</span> <span class="nx">key</span> <span class="k">of</span> <span class="nx">obj</span> <span class="k">when</span> <span class="nx">key</span> <span class="o">not</span> <span class="k">in</span> <span class="p">[</span><span class="s">&#39;parent&#39;</span><span class="p">,</span> <span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="s">&#39;elem&#39;</span><span class="p">]</span> <span class="o">and</span> <span class="k">typeof</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&#39;function&#39;</span>
         <span class="nx">newInstance</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">clone</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
 
       <span class="k">return</span> <span class="nx">newInstance</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p><code>option</code> constructs an option for a select where it handles the 
@@ -65,8 +65,9 @@ reciever as a sibling to the reciever.</p>             </td>             <td cla
       <span class="nx">@parent</span><span class="p">.</span><span class="nx">children</span><span class="p">.</span><span class="nx">push</span> <span class="nx">Helpers</span><span class="p">.</span><span class="nx">clone</span> <span class="nx">@</span>
       <span class="nx">@triggerRender</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <p><code>destroy</code> will remove the reciever from it's parents list
 of children.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">destroy: </span><span class="o">=&gt;</span> 
-      <span class="nx">@parent</span><span class="p">.</span><span class="nx">children</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">@parent</span><span class="p">.</span><span class="nx">children</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">@</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
-      <span class="nx">@parent</span><span class="p">.</span><span class="nx">triggerRender</span><span class="p">()</span>
+      <span class="nx">@elem</span><span class="p">.</span><span class="nx">slideUp</span> <span class="mi">100</span><span class="p">,</span> <span class="o">=&gt;</span>
+        <span class="nx">@parent</span><span class="p">.</span><span class="nx">children</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">@parent</span><span class="p">.</span><span class="nx">children</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">@</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="nx">@parent</span><span class="p">.</span><span class="nx">triggerRender</span><span class="p">()</span>
     </pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <p>Render is the code that is responsible for setting up an
 HTML fragment and binding all the necessary UI callbacks
 onto it. It is recommended to call super as this will make
@@ -113,6 +114,7 @@ We insert our container div after it and save it into the
           <span class="nx">link</span><span class="p">.</span><span class="nx">hide</span><span class="p">()</span>
           <span class="nx">@children</span><span class="p">.</span><span class="nx">push</span> <span class="k">new</span> <span class="nx">TopLevel</span><span class="p">(</span><span class="nx">@</span><span class="p">)</span>
           <span class="nx">@triggerRender</span><span class="p">()</span>
+          <span class="kc">false</span>
         <span class="nx">@target</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">link</span><span class="p">)</span>
         
     
@@ -173,7 +175,7 @@ to add or remove dates or rules.</p>
       
   
     <span class="nv">render: </span><span class="o">-&gt;</span> 
-      <span class="nv">$el = </span><span class="nx">$</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+      <span class="vi">@elem = </span><span class="nx">$</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
 <span class="s">    &lt;div class=&quot;toplevel&quot;&gt;Event &lt;select&gt;</span>
 <span class="s">      </span><span class="si">#{</span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&quot;occurs&quot;</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">type</span><span class="p">.</span><span class="nx">match</span> <span class="sr">/^r/</span><span class="si">}</span><span class="s"></span>
 <span class="s">      </span><span class="si">#{</span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;doesn&#39;t occur&quot;</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">type</span><span class="p">.</span><span class="nx">match</span> <span class="sr">/^ex/</span><span class="si">}</span><span class="s"></span>
@@ -183,7 +185,7 @@ to add or remove dates or rules.</p>
 <span class="s">    &lt;/select&gt;</span>
 <span class="s">    &lt;/div&gt;</span>
 <span class="s">    &quot;&quot;&quot;</span><span class="p">)</span>
-      <span class="nv">ss = </span><span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;select&#39;</span><span class="p">)</span>
+      <span class="nv">ss = </span><span class="nx">@elem</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;select&#39;</span><span class="p">)</span>
       <span class="nx">ss</span><span class="p">.</span><span class="nx">first</span><span class="p">().</span><span class="nx">change</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span>
         <span class="k">if</span> <span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span> <span class="o">==</span> <span class="s">&#39;1&#39;</span>
             <span class="vi">@data.type = </span><span class="nx">@data</span><span class="p">.</span><span class="nx">type</span><span class="p">.</span><span class="nx">replace</span> <span class="sr">/^ex/</span><span class="p">,</span> <span class="s">&#39;r&#39;</span>
@@ -203,8 +205,8 @@ to add or remove dates or rules.</p>
             <span class="vi">@data.type = </span><span class="s">&#39;exrules&#39;</span>
           <span class="vi">@children = </span><span class="p">[</span><span class="k">new</span> <span class="nx">Rule</span> <span class="nx">@</span><span class="p">]</span>
         <span class="nx">@triggerRender</span><span class="p">()</span>
-      <span class="nx">$el</span><span class="p">.</span><span class="nx">append</span> <span class="k">super</span>
-      <span class="nx">$el</span>
+      <span class="nx">@elem</span><span class="p">.</span><span class="nx">append</span> <span class="k">super</span>
+      <span class="nx">@elem</span>
   </pre></div>             </td>           </tr>                               <tr id="section-23">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-23">&#182;</a>               </div>               <h2>Choosing Individual DateTimes</h2>
 
 <p>The DatePicker class allows the user to pick an individual date and
@@ -217,19 +219,19 @@ something like jQuery UI.</p>             </td>             <td class="code">   
     
     <span class="nv">getData: </span><span class="o">-&gt;</span> <span class="nx">@data</span>
     <span class="nv">render: </span><span class="o">-&gt;</span> 
-      <span class="nv">$el = </span><span class="nx">$</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+      <span class="vi">@elem = </span><span class="nx">$</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
 <span class="s">        &lt;div class=&quot;DatePicker&quot;&gt;</span>
 <span class="s">          &lt;input type=&quot;date&quot; value=&quot;</span><span class="si">#{</span><span class="nx">@data</span><span class="p">.</span><span class="nx">time</span><span class="p">.</span><span class="nx">strftime</span><span class="p">(</span><span class="s">&#39;%Y-%m-%d&#39;</span><span class="p">)</span><span class="si">}</span><span class="s">&quot; /&gt;</span>
 <span class="s">          &lt;input type=&quot;time&quot; value=&quot;</span><span class="si">#{</span><span class="nx">@data</span><span class="p">.</span><span class="nx">time</span><span class="p">.</span><span class="nx">strftime</span><span class="p">(</span><span class="s">&#39;%H:%M&#39;</span><span class="p">)</span><span class="si">}</span><span class="s">&quot; /&gt;</span>
 <span class="s">        &lt;/div&gt;</span>
 <span class="s">      &quot;&quot;&quot;</span><span class="p">)</span>
-      <span class="nv">ss = </span><span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;input&#39;</span><span class="p">)</span>
+      <span class="nv">ss = </span><span class="nx">@elem</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;input&#39;</span><span class="p">)</span>
       <span class="nv">date = </span><span class="nx">ss</span><span class="p">.</span><span class="nx">first</span><span class="p">()</span>
       <span class="nv">time = </span><span class="nx">ss</span><span class="p">.</span><span class="nx">last</span><span class="p">()</span>
       <span class="nx">ss</span><span class="p">.</span><span class="nx">change</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span>
         <span class="vi">@data.time = </span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">dateFromString</span> <span class="nx">date</span><span class="p">.</span><span class="nx">val</span><span class="p">()</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="nx">time</span><span class="p">.</span><span class="nx">val</span><span class="p">()</span>
-      <span class="nx">$el</span><span class="p">.</span><span class="nx">append</span> <span class="k">super</span>
-      <span class="nx">$el</span>
+      <span class="nx">@elem</span><span class="p">.</span><span class="nx">append</span> <span class="k">super</span>
+      <span class="nx">@elem</span>
   </pre></div>             </td>           </tr>                               <tr id="section-24">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-24">&#182;</a>               </div>               <h2>Picking the initial Date</h2>
 
 <p><code>StartDate</code> is a concrete DatePicker subclass that takes care of picking
@@ -239,9 +241,9 @@ the initial date. The main diffrence is that it is unclonable.</p>             <
     <span class="nv">getData: </span><span class="o">-&gt;</span> <span class="p">{</span><span class="nv">type: </span><span class="s">&quot;start_date&quot;</span><span class="p">,</span> <span class="nv">values: </span><span class="nx">@data</span><span class="p">.</span><span class="nx">time</span><span class="p">}</span>
   
     <span class="nv">render: </span><span class="o">-&gt;</span>
-      <span class="nv">$el = </span><span class="k">super</span>
-      <span class="nx">$el</span><span class="p">.</span><span class="nx">prepend</span><span class="p">(</span><span class="s">&quot;Start time&quot;</span><span class="p">)</span>
-      <span class="nx">$el</span>
+      <span class="vi">@elem = </span><span class="k">super</span>
+      <span class="nx">@elem</span><span class="p">.</span><span class="nx">prepend</span><span class="p">(</span><span class="s">&quot;Start time&quot;</span><span class="p">)</span>
+      <span class="nx">@elem</span>
   </pre></div>             </td>           </tr>                               <tr id="section-25">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-25">&#182;</a>               </div>               <h2>Specifying Rules</h2>
 
 <p>Rules specify a sort of generator which than validations filter out.
@@ -275,7 +277,7 @@ year.</p>             </td>             <td class="code">               <div cla
       <span class="nx">h</span>
       
     <span class="nv">render: </span><span class="o">-&gt;</span>
-      <span class="nv">$el = </span><span class="nx">$</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+      <span class="vi">@elem = </span><span class="nx">$</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
 <span class="s">        &lt;div class=&quot;Rule&quot;&gt;</span>
 <span class="s">          Every </span>
 <span class="s">          &lt;input type=&quot;number&quot; value=&quot;</span><span class="si">#{</span><span class="nx">@data</span><span class="p">.</span><span class="nx">interval</span><span class="si">}</span><span class="s">&quot; size=&quot;2&quot; width=&quot;30&quot; /&gt;</span>
@@ -286,14 +288,14 @@ year.</p>             </td>             <td class="code">               <div cla
           <span class="s">&quot;IceCube::DailyRule&quot;</span><span class="o">:</span> <span class="s">&#39;days&#39;</span><span class="si">}</span><span class="s"></span>
 <span class="s">        &lt;/div&gt;</span>
 <span class="s">      &quot;&quot;&quot;</span><span class="p">)</span>
-      <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;input&#39;</span><span class="p">).</span><span class="nx">change</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span>
+      <span class="nx">@elem</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;input&#39;</span><span class="p">).</span><span class="nx">change</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span>
         <span class="vi">@data.interval = </span><span class="nb">parseInt</span> <span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span>
-      <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;select&#39;</span><span class="p">).</span><span class="nx">change</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span>
+      <span class="nx">@elem</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;select&#39;</span><span class="p">).</span><span class="nx">change</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span>
         <span class="vi">@data.rule_type = </span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span>
         <span class="vi">@children = </span><span class="p">[</span><span class="k">new</span> <span class="nx">Validation</span> <span class="nx">@</span><span class="p">]</span>
         <span class="nx">@triggerRender</span><span class="p">()</span>
-      <span class="nx">$el</span><span class="p">.</span><span class="nx">append</span> <span class="k">super</span>
-      <span class="nx">$el</span>
+      <span class="nx">@elem</span><span class="p">.</span><span class="nx">append</span> <span class="k">super</span>
+      <span class="nx">@elem</span>
       </pre></div>             </td>           </tr>                               <tr id="section-26">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-26">&#182;</a>               </div>               <h2>Validation</h2>
 
 <p>Validation let's the user pick what type of validation to use
@@ -366,8 +368,8 @@ and also agregates the arguments to the validation.</p>             </td>       
 <span class="s">        &lt;/select&gt;</span>
 <span class="s">      &lt;/div&gt;</span>
 <span class="s">      &quot;&quot;&quot;</span>
-      <span class="nv">$el = </span><span class="nx">$</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span>
-      <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;select&#39;</span><span class="p">).</span><span class="nx">change</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span></pre></div>             </td>           </tr>                               <tr id="section-27">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-27">&#182;</a>               </div>               <p>switch e.target.value
+      <span class="vi">@elem = </span><span class="nx">$</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span>
+      <span class="nx">@elem</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;select&#39;</span><span class="p">).</span><span class="nx">change</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span></pre></div>             </td>           </tr>                               <tr id="section-27">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-27">&#182;</a>               </div>               <p>switch e.target.value
          when 'count' then @children = [new Count @]
          when 'day' then @children = [new Day @]
          when 'day<em>of</em>week' then @children = [new DayOfWeek @]
@@ -377,7 +379,8 @@ and also agregates the arguments to the validation.</p>             </td>       
         <span class="vi">@children = </span><span class="p">[</span><span class="k">new</span> <span class="nx">klass</span> <span class="nx">@</span><span class="p">]</span>
         <span class="vi">@data.type = </span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span>
         <span class="nx">@triggerRender</span><span class="p">()</span>
-      <span class="nx">$el</span><span class="p">.</span><span class="nx">append</span> <span class="k">super</span>
+      <span class="nx">@elem</span><span class="p">.</span><span class="nx">append</span> <span class="k">super</span>
+      <span class="nx">@elem</span>
   </pre></div>             </td>           </tr>                               <tr id="section-28">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-28">&#182;</a>               </div>               <h1>Validation Types</h1>
 
 <p>we have a seperate class for each type of validation that the
@@ -393,11 +396,11 @@ validation types (typically those with a single parameter). </p>             </t
 of the UI into a js datastructure. It is by default <code>parseInt</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">dataTransformer: </span><span class="nb">parseInt</span>
     <span class="nv">default: </span><span class="mi">1</span></pre></div>             </td>           </tr>                               <tr id="section-30">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-30">&#182;</a>               </div>               <p>The <code>render</code> implementation relies on a <code>html</code> method that returns
 an HTML string.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">render: </span><span class="o">-&gt;</span>
-      <span class="nv">$el = </span><span class="nx">$</span> <span class="nx">@html</span><span class="p">()</span>
-      <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;input,select&#39;</span><span class="p">).</span><span class="nx">change</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span>
+      <span class="vi">@elem = </span><span class="nx">$</span> <span class="nx">@html</span><span class="p">()</span>
+      <span class="nx">@elem</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;input,select&#39;</span><span class="p">).</span><span class="nx">change</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span>
         <span class="vi">@data.value = </span><span class="nx">@dataTransformer</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span>
-      <span class="nx">$el</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="k">super</span><span class="p">)</span>
-      <span class="nx">$el</span></pre></div>             </td>           </tr>                               <tr id="section-31">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-31">&#182;</a>               </div>               <h2>Count</h2>
+      <span class="nx">@elem</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="k">super</span><span class="p">)</span>
+      <span class="nx">@elem</span></pre></div>             </td>           </tr>                               <tr id="section-31">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-31">&#182;</a>               </div>               <h2>Count</h2>
 
 <p>Count will limit the maximum times an event can repeat.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">class</span> <span class="nx">Count</span> <span class="k">extends</span> <span class="nx">ValidationInstance</span>
     <span class="nv">clonable: </span><span class="o">-&gt;</span> <span class="kc">false</span>
@@ -457,20 +460,20 @@ specify thing like "the 3rd sunday of the month" and so on.</p>             </td
       <span class="k">for</span> <span class="nx">day</span><span class="p">,</span> <span class="nx">i</span> <span class="k">in</span> <span class="nx">Helpers</span><span class="p">.</span><span class="nx">daysOfTheWeek</span>
         <span class="nx">str</span> <span class="o">+=</span> <span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="nx">i</span><span class="p">.</span><span class="nx">toString</span><span class="p">(),</span> <span class="nx">day</span><span class="p">,</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">day</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span> 
       <span class="nx">str</span> <span class="o">+=</span>  <span class="s">&quot;&lt;/select&gt;&lt;/div&gt;&quot;</span>
-      <span class="nv">$el = </span><span class="nx">$</span> <span class="nx">str</span>
-      <span class="nv">pluralize = </span><span class="o">=&gt;</span> <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;span&#39;</span><span class="p">).</span><span class="nx">first</span><span class="p">().</span><span class="nx">text</span> <span class="k">switch</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">nth</span>
+      <span class="vi">@elem = </span><span class="nx">$</span> <span class="nx">str</span>
+      <span class="nv">pluralize = </span><span class="o">=&gt;</span> <span class="nx">@elem</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;span&#39;</span><span class="p">).</span><span class="nx">first</span><span class="p">().</span><span class="nx">text</span> <span class="k">switch</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">nth</span>
         <span class="k">when</span> <span class="mi">1</span> <span class="k">then</span> <span class="s">&#39;st&#39;</span>
         <span class="k">when</span> <span class="mi">2</span> <span class="k">then</span> <span class="s">&#39;nd&#39;</span>
         <span class="k">when</span> <span class="mi">3</span> <span class="k">then</span> <span class="s">&#39;rd&#39;</span>
         <span class="k">else</span> <span class="s">&#39;th&#39;</span>
-      <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;input&#39;</span><span class="p">).</span><span class="nx">change</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span>
+      <span class="nx">@elem</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;input&#39;</span><span class="p">).</span><span class="nx">change</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span>
         <span class="vi">@data.nth = </span><span class="nb">parseInt</span> <span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span>
         <span class="nx">pluralize</span><span class="p">()</span>
-      <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;select&#39;</span><span class="p">).</span><span class="nx">change</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span>
+      <span class="nx">@elem</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;select&#39;</span><span class="p">).</span><span class="nx">change</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span>
         <span class="vi">@data.day = </span><span class="nb">parseInt</span> <span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span>
       <span class="nx">pluralize</span><span class="p">()</span>
-      <span class="nx">$el</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="k">super</span><span class="p">)</span>
-      <span class="nx">$el</span>
+      <span class="nx">@elem</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="k">super</span><span class="p">)</span>
+      <span class="nx">@elem</span>
     </pre></div>             </td>           </tr>                               <tr id="section-36">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-36">&#182;</a>               </div>               <h2>Day of Year</h2>
 
 <p>Allows to specify a particular day of the year.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">class</span> <span class="nx">DayOfYear</span> <span class="k">extends</span> <span class="nx">Option</span>
@@ -486,12 +489,12 @@ specify thing like "the 3rd sunday of the month" and so on.</p>             </td
 <span class="s">          </span><span class="si">#{</span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="s">&#39;end&#39;</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="si">}</span><span class="s"></span>
 <span class="s">        &lt;/select&gt; of the year.&lt;/div&gt;</span>
 <span class="s">      &quot;&quot;&quot;</span>
-      <span class="nv">$el = </span><span class="nx">$</span> <span class="nx">str</span>
-      <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;input,select&#39;</span><span class="p">).</span><span class="nx">change</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span>
-        <span class="vi">@data.value = </span><span class="nb">parseInt</span> <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;input&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span>
-        <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span> <span class="o">*=</span> <span class="k">if</span> <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;select&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;+&#39;</span> <span class="k">then</span> <span class="mi">1</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
-      <span class="nx">$el</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="k">super</span><span class="p">)</span>
-      <span class="nx">$el</span>
+      <span class="vi">@elem = </span><span class="nx">$</span> <span class="nx">str</span>
+      <span class="nx">@elem</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;input,select&#39;</span><span class="p">).</span><span class="nx">change</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span>
+        <span class="vi">@data.value = </span><span class="nb">parseInt</span> <span class="nx">@elem</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;input&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span>
+        <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span> <span class="o">*=</span> <span class="k">if</span> <span class="nx">@elem</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;select&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;+&#39;</span> <span class="k">then</span> <span class="mi">1</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+      <span class="nx">@elem</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="k">super</span><span class="p">)</span>
+      <span class="nx">@elem</span>
       </pre></div>             </td>           </tr>                               <tr id="section-37">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-37">&#182;</a>               </div>               <h2>Offset from Pascha</h2>
 
 <p>This class allows the user to specify dates in relation to the 
@@ -510,12 +513,12 @@ Orthodox celebration of Easter, Pascha.</p>             </td>             <td cl
 <span class="s">          </span><span class="si">#{</span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="s">&#39;before&#39;</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="si">}</span><span class="s"></span>
 <span class="s">        &lt;/select&gt; Pascha.&lt;/div&gt;</span>
 <span class="s">      &quot;&quot;&quot;</span>
-      <span class="nv">$el = </span><span class="nx">$</span> <span class="nx">str</span>
-      <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;input,select&#39;</span><span class="p">).</span><span class="nx">change</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span>
-        <span class="vi">@data.value = </span><span class="nb">parseInt</span> <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;input&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span>
-        <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span> <span class="o">*=</span> <span class="k">if</span> <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;select&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;+&#39;</span> <span class="k">then</span> <span class="mi">1</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
-      <span class="nx">$el</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="k">super</span><span class="p">)</span>
-      <span class="nx">$el</span>
+      <span class="vi">@elem = </span><span class="nx">$</span> <span class="nx">str</span>
+      <span class="nx">@elem</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;input,select&#39;</span><span class="p">).</span><span class="nx">change</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span>
+        <span class="vi">@data.value = </span><span class="nb">parseInt</span> <span class="nx">@elem</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;input&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span>
+        <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span> <span class="o">*=</span> <span class="k">if</span> <span class="nx">@elem</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;select&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;+&#39;</span> <span class="k">then</span> <span class="mi">1</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+      <span class="nx">@elem</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="k">super</span><span class="p">)</span>
+      <span class="nx">@elem</span>
   </pre></div>             </td>           </tr>                               <tr id="section-38">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-38">&#182;</a>               </div>               <h2>ICUI</h2>
 
 <p>This is the class that is responsible for initializing the whole

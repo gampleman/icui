@@ -34,7 +34,7 @@ do ($ = jQuery) ->
         newInstance.data = clone obj.data
       else
         newInstance = new obj.constructor()
-      for own key of obj when key not in ['parent', 'data'] and typeof obj[key] != 'function'
+      for own key of obj when key not in ['parent', 'data', 'elem'] and typeof obj[key] != 'function'
         newInstance[key] = clone obj[key]
 
       return newInstance
@@ -79,7 +79,7 @@ do ($ = jQuery) ->
       @children = []
       @data = {}
       if data != '__clone'
-        if data then @fromData(data) else @defaults()
+        if data? then @fromData(data) else @defaults()
     # `fromData` is meant as an initializer to which the relevant part
     # of the JSON representation is passed at startup.
     fromData: (data) ->
@@ -98,8 +98,9 @@ do ($ = jQuery) ->
     # `destroy` will remove the reciever from it's parents list
     # of children.
     destroy: => 
-      @parent.children.splice(@parent.children.indexOf(@), 1)
-      @parent.triggerRender()
+      @elem.slideUp 100, =>
+        @parent.children.splice(@parent.children.indexOf(@), 1)
+        @parent.triggerRender()
     
     # Render is the code that is responsible for setting up an
     # HTML fragment and binding all the necessary UI callbacks
@@ -117,6 +118,7 @@ do ($ = jQuery) ->
     # This will trigger a rerender for the whole structure without needing
     # to keep a global reference to the root node.
     triggerRender: -> @parent.triggerRender()
+
   
   # The Root Node
   # -------------
@@ -144,12 +146,21 @@ do ($ = jQuery) ->
   
     defaults: ->
       @children.push new StartDate(@)
-      @children.push new TopLevel(@)
+      #@children.push new TopLevel(@)
   
     triggerRender: -> @render()
   
     render: ->
       @target.html(@renderChildren())
+      if @children.length == 1
+        link = $("<a href='#'>Add repetition</a>")
+        link.click =>
+          link.hide()
+          @children.push new TopLevel(@)
+          @triggerRender()
+          false
+        @target.append(link)
+        
     
     getData: ->
       data = {}
@@ -160,6 +171,7 @@ do ($ = jQuery) ->
         else
           data[d.type] = d.values
       data
+      
     
   # TopLevel
   # --------
@@ -185,7 +197,7 @@ do ($ = jQuery) ->
   #              `- OffsetFromPascha +-
   class TopLevel extends Option
   
-    destroyable: -> @parent.children.length > 2
+    #destroyable: -> @parent.children.length > 2
   
     defaults: ->
       @data.type = 'rtimes'
@@ -210,7 +222,7 @@ do ($ = jQuery) ->
       
   
     render: -> 
-      $el = $("""
+      @elem = $("""
     <div class="toplevel">Event <select>
       #{Helpers.option 1, "occurs", => @data.type.match /^r/}
       #{Helpers.option -1, "doesn't occur", => @data.type.match /^ex/}
@@ -220,7 +232,7 @@ do ($ = jQuery) ->
     </select>
     </div>
     """)
-      ss = $el.find('select')
+      ss = @elem.find('select')
       ss.first().change (e) =>
         if e.target.value == '1'
             @data.type = @data.type.replace /^ex/, 'r'
@@ -240,8 +252,8 @@ do ($ = jQuery) ->
             @data.type = 'exrules'
           @children = [new Rule @]
         @triggerRender()
-      $el.append super
-      $el
+      @elem.append super
+      @elem
   
   # Choosing Individual DateTimes
   # -----------------------------
@@ -257,19 +269,19 @@ do ($ = jQuery) ->
     
     getData: -> @data
     render: -> 
-      $el = $("""
+      @elem = $("""
         <div class="DatePicker">
           <input type="date" value="#{@data.time.strftime('%Y-%m-%d')}" />
           <input type="time" value="#{@data.time.strftime('%H:%M')}" />
         </div>
       """)
-      ss = $el.find('input')
+      ss = @elem.find('input')
       date = ss.first()
       time = ss.last()
       ss.change (e) =>
         @data.time = Helpers.dateFromString date.val() + ' ' + time.val()
-      $el.append super
-      $el
+      @elem.append super
+      @elem
   
   # Picking the initial Date
   # ------------------------
@@ -281,9 +293,9 @@ do ($ = jQuery) ->
     getData: -> {type: "start_date", values: @data.time}
   
     render: ->
-      $el = super
-      $el.prepend("Start time")
-      $el
+      @elem = super
+      @elem.prepend("Start time")
+      @elem
   
   # Specifying Rules
   # ----------------
@@ -319,7 +331,7 @@ do ($ = jQuery) ->
       h
       
     render: ->
-      $el = $("""
+      @elem = $("""
         <div class="Rule">
           Every 
           <input type="number" value="#{@data.interval}" size="2" width="30" />
@@ -330,14 +342,14 @@ do ($ = jQuery) ->
           "IceCube::DailyRule": 'days'}
         </div>
       """)
-      $el.find('input').change (e) =>
+      @elem.find('input').change (e) =>
         @data.interval = parseInt e.target.value
-      $el.find('select').change (e) =>
+      @elem.find('select').change (e) =>
         @data.rule_type = e.target.value
         @children = [new Validation @]
         @triggerRender()
-      $el.append super
-      $el
+      @elem.append super
+      @elem
       
   # Validation
   # ----------
@@ -412,8 +424,8 @@ do ($ = jQuery) ->
         </select>
       </div>
       """
-      $el = $(str)
-      $el.find('select').change (e) =>
+      @elem = $(str)
+      @elem.find('select').change (e) =>
         # switch e.target.value
         #          when 'count' then @children = [new Count @]
         #          when 'day' then @children = [new Day @]
@@ -425,7 +437,8 @@ do ($ = jQuery) ->
         @children = [new klass @]
         @data.type = e.target.value
         @triggerRender()
-      $el.append super
+      @elem.append super
+      @elem
   
   # Validation Types
   # ================
@@ -447,11 +460,11 @@ do ($ = jQuery) ->
     # The `render` implementation relies on a `html` method that returns
     # an HTML string.
     render: ->
-      $el = $ @html()
-      $el.find('input,select').change (e) =>
+      @elem = $ @html()
+      @elem.find('input,select').change (e) =>
         @data.value = @dataTransformer(e.target.value)
-      $el.append(super)
-      $el
+      @elem.append(super)
+      @elem
   # Count
   # -----
   # Count will limit the maximum times an event can repeat.
@@ -522,20 +535,20 @@ do ($ = jQuery) ->
       for day, i in Helpers.daysOfTheWeek
         str += Helpers.option i.toString(), day, @data.day.toString() 
       str +=  "</select></div>"
-      $el = $ str
-      pluralize = => $el.find('span').first().text switch @data.nth
+      @elem = $ str
+      pluralize = => @elem.find('span').first().text switch @data.nth
         when 1 then 'st'
         when 2 then 'nd'
         when 3 then 'rd'
         else 'th'
-      $el.find('input').change (e) =>
+      @elem.find('input').change (e) =>
         @data.nth = parseInt e.target.value
         pluralize()
-      $el.find('select').change (e) =>
+      @elem.find('select').change (e) =>
         @data.day = parseInt e.target.value
       pluralize()
-      $el.append(super)
-      $el
+      @elem.append(super)
+      @elem
     
   # Day of Year
   # -----------
@@ -553,12 +566,12 @@ do ($ = jQuery) ->
           #{Helpers.option '-', 'end', => @data.value < 0}
         </select> of the year.</div>
       """
-      $el = $ str
-      $el.find('input,select').change (e) =>
-        @data.value = parseInt $el.find('input').val()
-        @data.value *= if $el.find('select').val() == '+' then 1 else -1
-      $el.append(super)
-      $el
+      @elem = $ str
+      @elem.find('input,select').change (e) =>
+        @data.value = parseInt @elem.find('input').val()
+        @data.value *= if @elem.find('select').val() == '+' then 1 else -1
+      @elem.append(super)
+      @elem
       
   # Offset from Pascha
   # ------------------
@@ -579,12 +592,12 @@ do ($ = jQuery) ->
           #{Helpers.option '-', 'before', => @data.value < 0}
         </select> Pascha.</div>
       """
-      $el = $ str
-      $el.find('input,select').change (e) =>
-        @data.value = parseInt $el.find('input').val()
-        @data.value *= if $el.find('select').val() == '+' then 1 else -1
-      $el.append(super)
-      $el
+      @elem = $ str
+      @elem.find('input,select').change (e) =>
+        @data.value = parseInt @elem.find('input').val()
+        @data.value *= if @elem.find('select').val() == '+' then 1 else -1
+      @elem.append(super)
+      @elem
   
   # ICUI
   # ----
