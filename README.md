@@ -1,12 +1,18 @@
 ICUI
 ====
 
-ICUI is a user interface component for creating arbitrary [IceCube](https://github.com/seejohnrun/ice_cube) objects specifying arbitrary repetition of events.
+ICUI is a user interface component for creating arbitrary [IceCube][ic] objects specifying arbitrary repetition of events. 
+
+As a user interface component it is more oriented for interfaces that really need to excersize the complex scheduling capabilities of [IceCube][ic]. If you need a rather simple recurrence widget, [other projects](https://github.com/seejohnrun/ice_cube/wiki/Related-Projects) might provide a better experience.
+
+Furthermore ICUI currently closely follows the logic of [IceCube][ic] itself, thus providing a strongly hierarchical way of constructing repetitions.
+
+[ic]: (https://github.com/seejohnrun/ice_cube)
 
 Usage
 -----
 
-ICUI constructs client side UI based on the JSON representation of a IceCube::Schedule object. Conventionally IceCube::Schedule are stored as YAML objects so using a function like this serverside might be helpful:
+ICUI constructs client side UI based on the JSON representation of a IceCube::Schedule object. Conventionally IceCube::Schedule are stored as YAML objects so using a function like this server-side might be helpful:
 
 ~~~ruby
 require 'yaml'

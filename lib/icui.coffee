@@ -79,7 +79,7 @@ do ($ = jQuery) ->
       @children = []
       @data = {}
       if data != '__clone'
-        if data then @fromData(data) else @defaults()
+        if data? then @fromData(data) else @defaults()
     # `fromData` is meant as an initializer to which the relevant part
     # of the JSON representation is passed at startup.
     fromData: (data) ->
@@ -117,6 +117,7 @@ do ($ = jQuery) ->
     # This will trigger a rerender for the whole structure without needing
     # to keep a global reference to the root node.
     triggerRender: -> @parent.triggerRender()
+
   
   # The Root Node
   # -------------
@@ -144,12 +145,20 @@ do ($ = jQuery) ->
   
     defaults: ->
       @children.push new StartDate(@)
-      @children.push new TopLevel(@)
+      #@children.push new TopLevel(@)
   
     triggerRender: -> @render()
   
     render: ->
       @target.html(@renderChildren())
+      if @children.length == 1
+        link = $("<a href='#'>Add repetition</a>")
+        link.click =>
+          link.hide()
+          @children.push new TopLevel(@)
+          @triggerRender()
+        @target.append(link)
+        
     
     getData: ->
       data = {}
@@ -160,6 +169,7 @@ do ($ = jQuery) ->
         else
           data[d.type] = d.values
       data
+      
     
   # TopLevel
   # --------
@@ -185,7 +195,7 @@ do ($ = jQuery) ->
   #              `- OffsetFromPascha +-
   class TopLevel extends Option
   
-    destroyable: -> @parent.children.length > 2
+    #destroyable: -> @parent.children.length > 2
   
     defaults: ->
       @data.type = 'rtimes'
