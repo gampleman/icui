@@ -58,7 +58,7 @@ inherit. A number of function are meant to be overriden.</p>             </td>  
       <span class="vi">@children = </span><span class="p">[]</span>
       <span class="vi">@data = </span><span class="p">{}</span>
       <span class="k">if</span> <span class="nx">data</span> <span class="o">!=</span> <span class="s">&#39;__clone&#39;</span>
-        <span class="k">if</span> <span class="nx">data</span> <span class="k">then</span> <span class="nx">@fromData</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="k">else</span> <span class="nx">@defaults</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p><code>fromData</code> is meant as an initializer to which the relevant part
+        <span class="k">if</span> <span class="nx">data</span><span class="o">?</span> <span class="k">then</span> <span class="nx">@fromData</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="k">else</span> <span class="nx">@defaults</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p><code>fromData</code> is meant as an initializer to which the relevant part
 of the JSON representation is passed at startup.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">fromData: </span><span class="nf">(data) -&gt;</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>Defaults is the initializer used typically for instances constructed
 as the default child of a parent.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">defaults: </span><span class="o">-&gt;</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>When <code>clonable</code> is <code>true</code> the + button will appear.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">clonable: </span><span class="o">-&gt;</span> <span class="kc">true</span></pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <p>When <code>destroyable</code> is <code>true</code> the - button will appear.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">destroyable: </span><span class="o">-&gt;</span> <span class="nx">@parent</span><span class="p">.</span><span class="nx">children</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">1</span></pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <p><code>clone</code> is the event handler that will insert a copy of the
 reciever as a sibling to the reciever.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">clone: </span><span class="o">=&gt;</span> 
@@ -80,6 +80,7 @@ cloning UI.</p>             </td>             <td class="code">               <d
     
     <span class="nv">renderChildren: </span><span class="o">-&gt;</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">()</span> <span class="k">for</span> <span class="nx">c</span> <span class="k">in</span> <span class="nx">@children</span></pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>               <p>This will trigger a rerender for the whole structure without needing
 to keep a global reference to the root node.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">triggerRender: </span><span class="o">-&gt;</span> <span class="nx">@parent</span><span class="p">.</span><span class="nx">triggerRender</span><span class="p">()</span>
+
   </pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <h2>The Root Node</h2>
 
 <p><code>Root</code> is meant as a singleton class (although this is not enforced).
@@ -101,13 +102,19 @@ We insert our container div after it and save it into the
         <span class="nx">@children</span><span class="p">.</span><span class="nx">push</span> <span class="k">new</span> <span class="nx">TopLevel</span><span class="p">(</span><span class="nx">@</span><span class="p">,</span> <span class="p">{</span><span class="nv">type: </span><span class="nx">k</span><span class="p">,</span> <span class="nv">values: </span><span class="nx">v</span><span class="p">})</span>
   
     <span class="nv">defaults: </span><span class="o">-&gt;</span>
-      <span class="nx">@children</span><span class="p">.</span><span class="nx">push</span> <span class="k">new</span> <span class="nx">StartDate</span><span class="p">(</span><span class="nx">@</span><span class="p">)</span>
-      <span class="nx">@children</span><span class="p">.</span><span class="nx">push</span> <span class="k">new</span> <span class="nx">TopLevel</span><span class="p">(</span><span class="nx">@</span><span class="p">)</span>
-  
+      <span class="nx">@children</span><span class="p">.</span><span class="nx">push</span> <span class="k">new</span> <span class="nx">StartDate</span><span class="p">(</span><span class="nx">@</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <p>@children.push new TopLevel(@)</p>             </td>             <td class="code">               <div class="highlight"><pre>  
     <span class="nv">triggerRender: </span><span class="o">-&gt;</span> <span class="nx">@render</span><span class="p">()</span>
   
     <span class="nv">render: </span><span class="o">-&gt;</span>
       <span class="nx">@target</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="nx">@renderChildren</span><span class="p">())</span>
+      <span class="k">if</span> <span class="nx">@children</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="nv">link = </span><span class="nx">$</span><span class="p">(</span><span class="s">&quot;&lt;a href=&#39;</span><span class="err">#</span><span class="s">&#39;&gt;Add repetition&lt;/a&gt;&quot;</span><span class="p">)</span>
+        <span class="nx">link</span><span class="p">.</span><span class="nx">click</span> <span class="o">=&gt;</span>
+          <span class="nx">link</span><span class="p">.</span><span class="nx">hide</span><span class="p">()</span>
+          <span class="nx">@children</span><span class="p">.</span><span class="nx">push</span> <span class="k">new</span> <span class="nx">TopLevel</span><span class="p">(</span><span class="nx">@</span><span class="p">)</span>
+          <span class="nx">@triggerRender</span><span class="p">()</span>
+        <span class="nx">@target</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">link</span><span class="p">)</span>
+        
     
     <span class="nv">getData: </span><span class="o">-&gt;</span>
       <span class="nv">data = </span><span class="p">{}</span>
@@ -118,7 +125,8 @@ We insert our container div after it and save it into the
         <span class="k">else</span>
           <span class="nx">data</span><span class="p">[</span><span class="nx">d</span><span class="p">.</span><span class="nx">type</span><span class="p">]</span> <span class="o">=</span> <span class="nx">d</span><span class="p">.</span><span class="nx">values</span>
       <span class="nx">data</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <h2>TopLevel</h2>
+      
+    </pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>               <h2>TopLevel</h2>
 
 <p>The <code>TopLevel</code> class let's the user pick whether he would like
 to add or remove dates or rules.</p>
@@ -141,9 +149,7 @@ to add or remove dates or rules.</p>
          |- DayOfYear +-
          `- OffsetFromPascha +-
 </code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">class</span> <span class="nx">TopLevel</span> <span class="k">extends</span> <span class="nx">Option</span>
-  
-    <span class="nv">destroyable: </span><span class="o">-&gt;</span> <span class="nx">@parent</span><span class="p">.</span><span class="nx">children</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">2</span>
-  
+  </pre></div>             </td>           </tr>                               <tr id="section-22">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-22">&#182;</a>               </div>               <p>destroyable: -> @parent.children.length > 2</p>             </td>             <td class="code">               <div class="highlight"><pre>  
     <span class="nv">defaults: </span><span class="o">-&gt;</span>
       <span class="vi">@data.type = </span><span class="s">&#39;rtimes&#39;</span>
       <span class="vi">@children = </span><span class="p">[</span><span class="k">new</span> <span class="nx">DatePicker</span> <span class="nx">@</span><span class="p">]</span>
@@ -199,7 +205,7 @@ to add or remove dates or rules.</p>
         <span class="nx">@triggerRender</span><span class="p">()</span>
       <span class="nx">$el</span><span class="p">.</span><span class="nx">append</span> <span class="k">super</span>
       <span class="nx">$el</span>
-  </pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>               <h2>Choosing Individual DateTimes</h2>
+  </pre></div>             </td>           </tr>                               <tr id="section-23">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-23">&#182;</a>               </div>               <h2>Choosing Individual DateTimes</h2>
 
 <p>The DatePicker class allows the user to pick an individual date and
 time. Currently it relies on HTML5 attributes to provide most of the
@@ -224,7 +230,7 @@ something like jQuery UI.</p>             </td>             <td class="code">   
         <span class="vi">@data.time = </span><span class="nx">Helpers</span><span class="p">.</span><span class="nx">dateFromString</span> <span class="nx">date</span><span class="p">.</span><span class="nx">val</span><span class="p">()</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="nx">time</span><span class="p">.</span><span class="nx">val</span><span class="p">()</span>
       <span class="nx">$el</span><span class="p">.</span><span class="nx">append</span> <span class="k">super</span>
       <span class="nx">$el</span>
-  </pre></div>             </td>           </tr>                               <tr id="section-22">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-22">&#182;</a>               </div>               <h2>Picking the initial Date</h2>
+  </pre></div>             </td>           </tr>                               <tr id="section-24">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-24">&#182;</a>               </div>               <h2>Picking the initial Date</h2>
 
 <p><code>StartDate</code> is a concrete DatePicker subclass that takes care of picking
 the initial date. The main diffrence is that it is unclonable.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">class</span> <span class="nx">StartDate</span> <span class="k">extends</span> <span class="nx">DatePicker</span>
@@ -236,7 +242,7 @@ the initial date. The main diffrence is that it is unclonable.</p>             <
       <span class="nv">$el = </span><span class="k">super</span>
       <span class="nx">$el</span><span class="p">.</span><span class="nx">prepend</span><span class="p">(</span><span class="s">&quot;Start time&quot;</span><span class="p">)</span>
       <span class="nx">$el</span>
-  </pre></div>             </td>           </tr>                               <tr id="section-23">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-23">&#182;</a>               </div>               <h2>Specifying Rules</h2>
+  </pre></div>             </td>           </tr>                               <tr id="section-25">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-25">&#182;</a>               </div>               <h2>Specifying Rules</h2>
 
 <p>Rules specify a sort of generator which than validations filter out.
 So the <code>YearlyRule</code> will generate thing which happen roughly once per
@@ -288,7 +294,7 @@ year.</p>             </td>             <td class="code">               <div cla
         <span class="nx">@triggerRender</span><span class="p">()</span>
       <span class="nx">$el</span><span class="p">.</span><span class="nx">append</span> <span class="k">super</span>
       <span class="nx">$el</span>
-      </pre></div>             </td>           </tr>                               <tr id="section-24">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-24">&#182;</a>               </div>               <h2>Validation</h2>
+      </pre></div>             </td>           </tr>                               <tr id="section-26">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-26">&#182;</a>               </div>               <h2>Validation</h2>
 
 <p>Validation let's the user pick what type of validation to use
 and also agregates the arguments to the validation.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">class</span> <span class="nx">Validation</span> <span class="k">extends</span> <span class="nx">Option</span>
@@ -361,7 +367,7 @@ and also agregates the arguments to the validation.</p>             </td>       
 <span class="s">      &lt;/div&gt;</span>
 <span class="s">      &quot;&quot;&quot;</span>
       <span class="nv">$el = </span><span class="nx">$</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span>
-      <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;select&#39;</span><span class="p">).</span><span class="nx">change</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span></pre></div>             </td>           </tr>                               <tr id="section-25">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-25">&#182;</a>               </div>               <p>switch e.target.value
+      <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;select&#39;</span><span class="p">).</span><span class="nx">change</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span></pre></div>             </td>           </tr>                               <tr id="section-27">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-27">&#182;</a>               </div>               <p>switch e.target.value
          when 'count' then @children = [new Count @]
          when 'day' then @children = [new Day @]
          when 'day<em>of</em>week' then @children = [new DayOfWeek @]
@@ -372,7 +378,7 @@ and also agregates the arguments to the validation.</p>             </td>       
         <span class="vi">@data.type = </span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span>
         <span class="nx">@triggerRender</span><span class="p">()</span>
       <span class="nx">$el</span><span class="p">.</span><span class="nx">append</span> <span class="k">super</span>
-  </pre></div>             </td>           </tr>                               <tr id="section-26">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-26">&#182;</a>               </div>               <h1>Validation Types</h1>
+  </pre></div>             </td>           </tr>                               <tr id="section-28">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-28">&#182;</a>               </div>               <h1>Validation Types</h1>
 
 <p>we have a seperate class for each type of validation that the
 user can pick with <code>Validation</code>.</p>
@@ -383,15 +389,15 @@ user can pick with <code>Validation</code>.</p>
 validation types (typically those with a single parameter). </p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">class</span> <span class="nx">ValidationInstance</span> <span class="k">extends</span> <span class="nx">Option</span>
     <span class="nv">defaults: </span><span class="o">-&gt;</span> <span class="vi">@data.value = </span><span class="nx">@default</span>
     <span class="nv">fromData: </span><span class="nf">(d) -&gt;</span> <span class="vi">@data.value = </span><span class="nx">d</span>
-    <span class="nv">getData: </span><span class="o">-&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span></pre></div>             </td>           </tr>                               <tr id="section-27">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-27">&#182;</a>               </div>               <p><code>dataTransformer</code> is what transforms the string representation
+    <span class="nv">getData: </span><span class="o">-&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span></pre></div>             </td>           </tr>                               <tr id="section-29">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-29">&#182;</a>               </div>               <p><code>dataTransformer</code> is what transforms the string representation
 of the UI into a js datastructure. It is by default <code>parseInt</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">dataTransformer: </span><span class="nb">parseInt</span>
-    <span class="nv">default: </span><span class="mi">1</span></pre></div>             </td>           </tr>                               <tr id="section-28">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-28">&#182;</a>               </div>               <p>The <code>render</code> implementation relies on a <code>html</code> method that returns
+    <span class="nv">default: </span><span class="mi">1</span></pre></div>             </td>           </tr>                               <tr id="section-30">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-30">&#182;</a>               </div>               <p>The <code>render</code> implementation relies on a <code>html</code> method that returns
 an HTML string.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">render: </span><span class="o">-&gt;</span>
       <span class="nv">$el = </span><span class="nx">$</span> <span class="nx">@html</span><span class="p">()</span>
       <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;input,select&#39;</span><span class="p">).</span><span class="nx">change</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span>
         <span class="vi">@data.value = </span><span class="nx">@dataTransformer</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span>
       <span class="nx">$el</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="k">super</span><span class="p">)</span>
-      <span class="nx">$el</span></pre></div>             </td>           </tr>                               <tr id="section-29">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-29">&#182;</a>               </div>               <h2>Count</h2>
+      <span class="nx">$el</span></pre></div>             </td>           </tr>                               <tr id="section-31">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-31">&#182;</a>               </div>               <h2>Count</h2>
 
 <p>Count will limit the maximum times an event can repeat.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">class</span> <span class="nx">Count</span> <span class="k">extends</span> <span class="nx">ValidationInstance</span>
     <span class="nv">clonable: </span><span class="o">-&gt;</span> <span class="kc">false</span>
@@ -399,13 +405,13 @@ an HTML string.</p>             </td>             <td class="code">             
 <span class="s">      &lt;div class=&quot;Count&quot;&gt;</span>
 <span class="s">        &lt;input type=&quot;number&quot; value=</span><span class="si">#{</span><span class="nx">@data</span><span class="p">.</span><span class="nx">value</span><span class="si">}</span><span class="s"> /&gt; times.</span>
 <span class="s">      &lt;/div&gt;</span>
-<span class="s">      &quot;&quot;&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-30">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-30">&#182;</a>               </div>               <h2>Until</h2>
+<span class="s">      &quot;&quot;&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-32">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-32">&#182;</a>               </div>               <h2>Until</h2>
 
 <p>Until will repeat the event until a specified date.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">class</span> <span class="nx">Until</span> <span class="k">extends</span> <span class="nx">DatePicker</span>
     <span class="nv">getData: </span><span class="o">-&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">time</span>
     <span class="nv">clonable: </span><span class="o">-&gt;</span> <span class="kc">false</span>
     <span class="nv">destroyable: </span><span class="o">-&gt;</span> <span class="kc">false</span>
-  </pre></div>             </td>           </tr>                               <tr id="section-31">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-31">&#182;</a>               </div>               <h2>Day of Month</h2>
+  </pre></div>             </td>           </tr>                               <tr id="section-33">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-33">&#182;</a>               </div>               <h2>Day of Month</h2>
 
 <p>Day of month filters out days that are not the nth day of the month.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">class</span> <span class="nx">DayOfMonth</span> <span class="k">extends</span> <span class="nx">ValidationInstance</span>
     <span class="nv">html: </span><span class="o">-&gt;</span>
@@ -422,7 +428,7 @@ an HTML string.</p>             </td>             <td class="code">             
       <span class="nx">str</span> <span class="o">+=</span> <span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="s">&quot;-1&quot;</span><span class="p">,</span> <span class="s">&quot;last&quot;</span><span class="p">,</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
       <span class="nx">str</span> <span class="o">+=</span>  <span class="s">&quot;&quot;&quot;&lt;/select&gt; day of the month.</span>
 <span class="s">      &lt;/div&gt;</span>
-<span class="s">      &quot;&quot;&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-32">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-32">&#182;</a>               </div>               <h2>Day</h2>
+<span class="s">      &quot;&quot;&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-34">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-34">&#182;</a>               </div>               <h2>Day</h2>
 
 <p>Day let's the user filter events occuring on particular days of the
 week.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">class</span> <span class="nx">Day</span> <span class="k">extends</span> <span class="nx">ValidationInstance</span>
@@ -434,7 +440,7 @@ week.</p>             </td>             <td class="code">               <div cla
         <span class="nx">str</span> <span class="o">+=</span> <span class="nx">Helpers</span><span class="p">.</span><span class="nx">option</span> <span class="nx">i</span><span class="p">.</span><span class="nx">toString</span><span class="p">(),</span> <span class="nx">day</span><span class="p">,</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span> 
       <span class="nx">str</span> <span class="o">+=</span>  <span class="s">&quot;&quot;&quot;&lt;/select&gt;</span>
 <span class="s">      &lt;/div&gt;</span>
-<span class="s">      &quot;&quot;&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-33">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-33">&#182;</a>               </div>               <h2>Day of Week</h2>
+<span class="s">      &quot;&quot;&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-35">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-35">&#182;</a>               </div>               <h2>Day of Week</h2>
 
 <p>This is the perhaps most confusing rule. It allows the user to
 specify thing like "the 3rd sunday of the month" and so on.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">class</span> <span class="nx">DayOfWeek</span> <span class="k">extends</span> <span class="nx">Option</span>
@@ -465,7 +471,7 @@ specify thing like "the 3rd sunday of the month" and so on.</p>             </td
       <span class="nx">pluralize</span><span class="p">()</span>
       <span class="nx">$el</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="k">super</span><span class="p">)</span>
       <span class="nx">$el</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-34">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-34">&#182;</a>               </div>               <h2>Day of Year</h2>
+    </pre></div>             </td>           </tr>                               <tr id="section-36">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-36">&#182;</a>               </div>               <h2>Day of Year</h2>
 
 <p>Allows to specify a particular day of the year.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">class</span> <span class="nx">DayOfYear</span> <span class="k">extends</span> <span class="nx">Option</span>
     <span class="nv">getData: </span><span class="o">-&gt;</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span>
@@ -486,7 +492,7 @@ specify thing like "the 3rd sunday of the month" and so on.</p>             </td
         <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span> <span class="o">*=</span> <span class="k">if</span> <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;select&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;+&#39;</span> <span class="k">then</span> <span class="mi">1</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
       <span class="nx">$el</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="k">super</span><span class="p">)</span>
       <span class="nx">$el</span>
-      </pre></div>             </td>           </tr>                               <tr id="section-35">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-35">&#182;</a>               </div>               <h2>Offset from Pascha</h2>
+      </pre></div>             </td>           </tr>                               <tr id="section-37">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-37">&#182;</a>               </div>               <h2>Offset from Pascha</h2>
 
 <p>This class allows the user to specify dates in relation to the 
 Orthodox celebration of Easter, Pascha.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">class</span> <span class="nx">OffsetFromPascha</span> <span class="k">extends</span> <span class="nx">Option</span>
@@ -510,7 +516,7 @@ Orthodox celebration of Easter, Pascha.</p>             </td>             <td cl
         <span class="nx">@data</span><span class="p">.</span><span class="nx">value</span> <span class="o">*=</span> <span class="k">if</span> <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;select&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;+&#39;</span> <span class="k">then</span> <span class="mi">1</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
       <span class="nx">$el</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="k">super</span><span class="p">)</span>
       <span class="nx">$el</span>
-  </pre></div>             </td>           </tr>                               <tr id="section-36">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-36">&#182;</a>               </div>               <h2>ICUI</h2>
+  </pre></div>             </td>           </tr>                               <tr id="section-38">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-38">&#182;</a>               </div>               <h2>ICUI</h2>
 
 <p>This is the class that is responsible for initializing the whole
 hierarchy and also setting up the form to retrieve the correct
@@ -531,7 +537,7 @@ representation.</p>             </td>             <td class="code">             
       <span class="nx">$el</span><span class="p">.</span><span class="nx">after</span> <span class="nx">@root</span><span class="p">.</span><span class="nx">render</span><span class="p">()</span>
   
     <span class="nv">getData: </span><span class="o">-&gt;</span>
-      <span class="nx">@root</span><span class="p">.</span><span class="nx">getData</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-37">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-37">&#182;</a>               </div>               <h2>The jQuery Plugin</h2>
+      <span class="nx">@root</span><span class="p">.</span><span class="nx">getData</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-39">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-39">&#182;</a>               </div>               <h2>The jQuery Plugin</h2>
 
 <p>Aceepts an options object where future configuration can go in.
 Currently suports only a 'submit' key, which is a function called
