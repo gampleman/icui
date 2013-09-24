@@ -60,4 +60,4 @@ ICUI currently deals with all times as if they are UTC times.
 Development and Extension
 -------------------------
 
-The library is fairly easy to extend. It is written in OO CofeeScript. Extending usually involves subclassing the `Option` class and than modifying the parent class to create the instance of the child. For details see the [annotated source code](http://about.gampleman.eu/icui/docs/icui.html).
+The library is fairly easy to extend. It is written in OO CofeeScript. Extending usually involves subclassing the `Option` class and than modifying the parent class to create the instance of the child. For details see the [annotated source code](http://code.gampleman.eu/icui/docs/icui.html).
