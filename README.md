@@ -53,7 +53,7 @@ ICUI isn't tested on any IE, but should work, but might require a JSON shim.
 
 ICUI currently extends the `Date` prototype with a `strftime` (written by Gianni Chiappetta) method, the plan is to drop this in the future.
 
-Currently ICUI doesn't support the rules and validations that have higher resolution than 1 day, however it should be fairly trivial to add these and in fact this is on the development roadmap. [`end_time` also isn't supported](https://github.com/gampleman/icui/issues/1).
+Currently ICUI doesn't support the rules and validations that have higher resolution than 1 day, however it should be fairly trivial to add these and in fact this is on the development roadmap.
 
 ICUI currently deals with all times as if they are UTC times.
 

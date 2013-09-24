@@ -141,7 +141,8 @@ do ($ = jQuery) ->
     
     fromData: (d) ->
       @children.push new StartDate(@, d["start_date"])
-      for k,v of d when v.length > 0 and k != "start_date"
+      @children.push new EndTime(@, d["end_time"]) if d["end_time"]
+      for k,v of d when v.length > 0 and k != "start_date" and k != "end_time"
         @children.push new TopLevel(@, {type: k, values: v})
   
     defaults: ->
@@ -153,6 +154,15 @@ do ($ = jQuery) ->
     render: ->
       @target.html(@renderChildren())
       if @children.length == 1
+        link = $("<a href='#'>Add Ending Time</a> ")
+        link.click =>
+          link.hide()
+          @children.push new EndTime(@)
+          @triggerRender()
+          false
+        @target.append(link)
+        @target.append("<br />")
+      if @children.length <= 2 && @children[@children.length - 1] instanceof DatePicker
         link = $("<a href='#'>Add repetition</a>")
         link.click =>
           link.hide()
@@ -297,6 +307,20 @@ do ($ = jQuery) ->
       @elem.prepend("Start time")
       @elem
   
+  # Picking the ending Date
+  # -----------------------
+  # `EndTime` is a concrete DatePicker subclass that takes care of picking
+  # the ending date. The main diffrence is that it is unclonable.
+  class EndTime extends DatePicker
+    destroyable: -> true
+    clonable: -> false
+    getData: -> {type: "end_time", values: @data.time}
+
+    render: ->
+      @elem = super
+      @elem.prepend("End time")
+      @elem
+          
   # Specifying Rules
   # ----------------
   # Rules specify a sort of generator which than validations filter out.
