@@ -32,14 +32,16 @@ task 'build', ->
       exec "uglifyjs2 lib/strftime.js lib/icui.js -o js/jquery.icui.min.js -c -m", (e) ->
         console.log e if e
         exec "rm lib/icui.js"
-      
+
+fs  = require("fs")     
 task 'develop', ->
   http = require("http")
   url = require("url")
-  fs  = require("fs")
+  
   console.log "Listening on http://localhost:8888/ ..."
   http.createServer (request, response) ->
     uri = url.parse(request.url).pathname
+    extension = uri.split('.').pop()
     if uri == '/'
       response.writeHead(200)
       response.write("""<html>
@@ -92,8 +94,32 @@ task 'develop', ->
               fs.readFile 'js/icui.js', "binary", (err, file) ->
                 response.write(file, "binary")
                 response.end()
-    else if uri == '/app.css'
-      fs.readFile 'app.css', "binary", (err, file) ->
-        response.write(file, "binary")
-        response.end()
+    else if extension == 'js' && !uri.match(/jasmine/)
+      comps = uri.split('.')
+      comps.pop()
+      sendCompiledFile(response, comps.join('.'))
+    else
+      sendFile(response, uri[1..])
   .listen 8888
+
+
+sendFile = (response, path, cb = ->) ->
+  fs.readFile path, "binary", (err, file) ->
+    if err
+      console.log err
+      response.writeHead 404
+      response.end()
+    else
+      response.write(file, "binary")
+      response.end()
+      cb()
+
+sendCompiledFile = (response, path, cb = ->) ->
+  path = path[1..]
+  exec "coffee -cb #{path}.coffee", (e) ->
+    if e
+      console.log e
+      response.write("""$(function() {document.write("<h1>Compile Error</h1><pre>#{("" + e).replace(/\n/g, "\\n")}</pre>");});""", 'UTF-8')
+      response.end()
+    else
+      sendFile response, "#{path}.js", cb

@@ -127,8 +127,10 @@ do ($ = jQuery) ->
   # It holds inside itself all other nodes and is responsible for actually
   # putting the whole structure into the DOM.
   class Root extends Option
-    clonable: -> false
-    destroyable: -> false
+    clonable: -> no
+    destroyable: -> no
+    has_ending_time: no
+    has_rules: no
     
     constructor: ->
       super
@@ -141,8 +143,11 @@ do ($ = jQuery) ->
     
     fromData: (d) ->
       @children.push new StartDate(@, d["start_date"])
-      @children.push new EndTime(@, d["end_time"]) if d["end_time"]
+      if d["end_time"]
+        @has_ending_time = yes
+        @children.push new EndTime(@, d["end_time"]) 
       for k,v of d when v.length > 0 and k != "start_date" and k != "end_time"
+        @has_rules = yes
         @children.push new TopLevel(@, {type: k, values: v})
   
     defaults: ->
@@ -153,18 +158,20 @@ do ($ = jQuery) ->
   
     render: ->
       @target.html(@renderChildren())
-      if @children.length == 1
+      unless @has_ending_time
         link = $("<a href='#'>Add Ending Time</a> ")
         link.click =>
+          @has_ending_time = yes
           link.hide()
           @children.push new EndTime(@)
           @triggerRender()
           false
         @target.append(link)
         @target.append("<br />")
-      if @children.length <= 2 && @children[@children.length - 1] instanceof DatePicker
-        link = $("<a href='#'>Add repetition</a>")
+      unless @has_rules
+        link = $("<a href='#'>Add Repetition</a>")
         link.click =>
+          @has_rules = yes
           link.hide()
           @children.push new TopLevel(@)
           @triggerRender()

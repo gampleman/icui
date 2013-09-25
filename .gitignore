@@ -1,2 +1,3 @@
 .DS_Store
 js/icui.js
+spec/*.js
