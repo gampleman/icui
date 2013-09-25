@@ -87,8 +87,10 @@ to keep a global reference to the root node.</p>             </td>             <
 <p><code>Root</code> is meant as a singleton class (although this is not enforced).
 It holds inside itself all other nodes and is responsible for actually
 putting the whole structure into the DOM.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">class</span> <span class="nx">Root</span> <span class="k">extends</span> <span class="nx">Option</span>
-    <span class="nv">clonable: </span><span class="o">-&gt;</span> <span class="kc">false</span>
-    <span class="nv">destroyable: </span><span class="o">-&gt;</span> <span class="kc">false</span>
+    <span class="nv">clonable: </span><span class="o">-&gt;</span> <span class="kc">no</span>
+    <span class="nv">destroyable: </span><span class="o">-&gt;</span> <span class="kc">no</span>
+    <span class="nv">has_ending_time: </span><span class="kc">no</span>
+    <span class="nv">has_rules: </span><span class="kc">no</span>
     
     <span class="nv">constructor: </span><span class="o">-&gt;</span>
       <span class="k">super</span></pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <p>The parent of the root node is the jQuerified element
@@ -99,8 +101,11 @@ We insert our container div after it and save it into the
     
     <span class="nv">fromData: </span><span class="nf">(d) -&gt;</span>
       <span class="nx">@children</span><span class="p">.</span><span class="nx">push</span> <span class="k">new</span> <span class="nx">StartDate</span><span class="p">(</span><span class="nx">@</span><span class="p">,</span> <span class="nx">d</span><span class="p">[</span><span class="s">&quot;start_date&quot;</span><span class="p">])</span>
-      <span class="nx">@children</span><span class="p">.</span><span class="nx">push</span> <span class="k">new</span> <span class="nx">EndTime</span><span class="p">(</span><span class="nx">@</span><span class="p">,</span> <span class="nx">d</span><span class="p">[</span><span class="s">&quot;end_time&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="nx">d</span><span class="p">[</span><span class="s">&quot;end_time&quot;</span><span class="p">]</span>
+      <span class="k">if</span> <span class="nx">d</span><span class="p">[</span><span class="s">&quot;end_time&quot;</span><span class="p">]</span>
+        <span class="vi">@has_ending_time = </span><span class="kc">yes</span>
+        <span class="nx">@children</span><span class="p">.</span><span class="nx">push</span> <span class="k">new</span> <span class="nx">EndTime</span><span class="p">(</span><span class="nx">@</span><span class="p">,</span> <span class="nx">d</span><span class="p">[</span><span class="s">&quot;end_time&quot;</span><span class="p">])</span> 
       <span class="k">for</span> <span class="nx">k</span><span class="p">,</span><span class="nx">v</span> <span class="k">of</span> <span class="nx">d</span> <span class="k">when</span> <span class="nx">v</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">and</span> <span class="nx">k</span> <span class="o">!=</span> <span class="s">&quot;start_date&quot;</span> <span class="o">and</span> <span class="nx">k</span> <span class="o">!=</span> <span class="s">&quot;end_time&quot;</span>
+        <span class="vi">@has_rules = </span><span class="kc">yes</span>
         <span class="nx">@children</span><span class="p">.</span><span class="nx">push</span> <span class="k">new</span> <span class="nx">TopLevel</span><span class="p">(</span><span class="nx">@</span><span class="p">,</span> <span class="p">{</span><span class="nv">type: </span><span class="nx">k</span><span class="p">,</span> <span class="nv">values: </span><span class="nx">v</span><span class="p">})</span>
   
     <span class="nv">defaults: </span><span class="o">-&gt;</span>
@@ -109,18 +114,20 @@ We insert our container div after it and save it into the
   
     <span class="nv">render: </span><span class="o">-&gt;</span>
       <span class="nx">@target</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="nx">@renderChildren</span><span class="p">())</span>
-      <span class="k">if</span> <span class="nx">@children</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">1</span>
+      <span class="nx">unless</span> <span class="nx">@has_ending_time</span>
         <span class="nv">link = </span><span class="nx">$</span><span class="p">(</span><span class="s">&quot;&lt;a href=&#39;</span><span class="err">#</span><span class="s">&#39;&gt;Add Ending Time&lt;/a&gt; &quot;</span><span class="p">)</span>
         <span class="nx">link</span><span class="p">.</span><span class="nx">click</span> <span class="o">=&gt;</span>
+          <span class="vi">@has_ending_time = </span><span class="kc">yes</span>
           <span class="nx">link</span><span class="p">.</span><span class="nx">hide</span><span class="p">()</span>
           <span class="nx">@children</span><span class="p">.</span><span class="nx">push</span> <span class="k">new</span> <span class="nx">EndTime</span><span class="p">(</span><span class="nx">@</span><span class="p">)</span>
           <span class="nx">@triggerRender</span><span class="p">()</span>
           <span class="kc">false</span>
         <span class="nx">@target</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">link</span><span class="p">)</span>
         <span class="nx">@target</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s">&quot;&lt;br /&gt;&quot;</span><span class="p">)</span>
-      <span class="k">if</span> <span class="nx">@children</span><span class="p">.</span><span class="nx">length</span> <span class="o">&lt;=</span> <span class="mi">2</span> <span class="o">&amp;&amp;</span> <span class="nx">@children</span><span class="p">[</span><span class="nx">@children</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="k">instanceof</span> <span class="nx">DatePicker</span>
-        <span class="nv">link = </span><span class="nx">$</span><span class="p">(</span><span class="s">&quot;&lt;a href=&#39;</span><span class="err">#</span><span class="s">&#39;&gt;Add repetition&lt;/a&gt;&quot;</span><span class="p">)</span>
+      <span class="nx">unless</span> <span class="nx">@has_rules</span>
+        <span class="nv">link = </span><span class="nx">$</span><span class="p">(</span><span class="s">&quot;&lt;a href=&#39;</span><span class="err">#</span><span class="s">&#39;&gt;Add Repetition&lt;/a&gt;&quot;</span><span class="p">)</span>
         <span class="nx">link</span><span class="p">.</span><span class="nx">click</span> <span class="o">=&gt;</span>
+          <span class="vi">@has_rules = </span><span class="kc">yes</span>
           <span class="nx">link</span><span class="p">.</span><span class="nx">hide</span><span class="p">()</span>
           <span class="nx">@children</span><span class="p">.</span><span class="nx">push</span> <span class="k">new</span> <span class="nx">TopLevel</span><span class="p">(</span><span class="nx">@</span><span class="p">)</span>
           <span class="nx">@triggerRender</span><span class="p">()</span>
