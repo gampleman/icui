@@ -25,7 +25,7 @@ def json2yaml(str)
 end
 ~~~
 
-ICUI is dependant on jQuery and expects it to be already present. Typically ICUI will be used with a hidden form field which contains as it's value the JSON representation of the IceCube schedule. Then the jQuery method `icui` should be called to instantiate ICUI. The form field will be updated automatically with a new JSON representation on form submission.
+ICUI is dependent on jQuery and expects it to be already present. Typically ICUI will be used with a hidden form field which contains as it's value the JSON representation of the IceCube schedule. Then the jQuery method `icui` should be called to instantiate ICUI. The form field will be updated automatically with a new JSON representation on form submission.
 
 For usage with AJAX the `icui.getData()` method must be called to get a native representation of the data.
 
@@ -60,4 +60,4 @@ ICUI currently deals with all times as if they are UTC times.
 Development and Extension
 -------------------------
 
-The library is fairly easy to extend. It is written in OO CofeeScript. Extending usually involves subclassing the `Option` class and than modifying the parent class to create the instance of the child. For details see the [annotated source code](http://about.gampleman.eu/icui/docs/icui.html).
+The library is fairly easy to extend. It is written in OO CofeeScript. Extending usually involves subclassing the `Option` class and than modifying the parent class to create the instance of the child. The project really is one source file, the rest of the files in the repository are really mostly cruft (like tests, documentation, build files, dependencies, etc.). For details see the [annotated source code](http://code.gampleman.eu/icui/docs/icui.html).
