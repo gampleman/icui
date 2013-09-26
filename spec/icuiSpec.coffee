@@ -4,6 +4,8 @@ describe "ICUI", ->
   $rep_link = null
   #icui_instance = null
   
+  numberOf = (q) -> $el.find(q).length
+  
   beforeEach ->
     $form = $("<form><input type='hidden' value='' /></form>")
     $(document.body).append($form)
@@ -11,51 +13,49 @@ describe "ICUI", ->
     $el = $form.find('.icui')
     $rep_link = $($el.find("a")[1])
     
-  afterEach ->
-    $form.remove()
+  afterEach -> $form.remove()
   
   it "should allow to enter the start date", ->
-    expect($el.find("input[type=date]").length).toBe(1)
-    expect($el.find("input[type=time]").length).toBe(1)
+    expect(numberOf "input[type=date]").toBe(1)
+    expect(numberOf "input[type=time]").toBe(1)
   
   it "should allow to add an end time", ->
-    expect($el.find("a").length).toBe(2)
+    expect(numberOf "a").toBe(2)
     $end_link = $($el.find("a")[0])
     expect($end_link.text()).toBe("Add Ending Time")
     $end_link.click()
-    expect($el.find("input[type=date]").length).toBe(2)
-    expect($el.find("input[type=time]").length).toBe(2)
-    expect($el.find("a").length).toBe(1)
+    expect(numberOf "input[type=date]").toBe(2)
+    expect(numberOf "input[type=time]").toBe(2)
+    expect(numberOf "a").toBe(1)
     
   it "should allow to add repetitions which default to specific dates", ->
     expect($rep_link.text()).toBe("Add Repetition")
-    expect($el.find("select").length).toBe(0)
+    expect(numberOf "select").toBe(0)
     $rep_link.click()
-    expect($el.find("a").length).toBe(1)
-    expect($el.find("select").length).toBe(2)
-    expect($el.find("input[type=date]").length).toBe(2)
-    expect($el.find("input[type=time]").length).toBe(2)
+    expect(numberOf "a").toBe(1)
+    expect(numberOf "select").toBe(2)
+    expect(numberOf "input[type=date]").toBe(2)
+    expect(numberOf "input[type=time]").toBe(2)
     
   it "should allow to add more specific dates", ->
     $rep_link.click()
-    clones = $("span.btn.clone")
+    clones = $el.find("span.btn.clone")
     expect(clones.length).toBe(2)
-    expect($("span.btn.destroy").length).toBe(1)
+    expect(numberOf "span.btn.destroy").toBe(1)
     clones.last().click()
-    expect($("span.btn.destroy").length).toBe(3)
-    expect($el.find("input[type=date]").length).toBe(3)
-    expect($el.find("input[type=time]").length).toBe(3)
+    expect(numberOf "span.btn.destroy").toBe(3)
+    expect(numberOf "input[type=date]").toBe(3)
+    expect(numberOf "input[type=time]").toBe(3)
   
   it "should allow to remove dates after they have been added", (done) ->
     $rep_link.click()
-    $("span.btn.clone").last().click()
-    middle_destroy = $($("span.btn.destroy")[1])
-    console.log middle_destroy
+    $el.find("span.btn.clone").last().click()
+    middle_destroy = $($el.find("span.btn.destroy")[1])
     middle_destroy.click()
     setTimeout ->
-        expect($("span.btn.destroy").length).toBe(1)
-        expect($el.find("input[type=date]").length).toBe(2)
-        expect($el.find("input[type=time]").length).toBe(2)
-        done()
+      expect(numberOf "span.btn.destroy").toBe(1)
+      expect(numberOf "input[type=date]").toBe(2)
+      expect(numberOf "input[type=time]").toBe(2)
+      done()
     , 105
     
