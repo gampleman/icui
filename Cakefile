@@ -3,7 +3,7 @@
 task "full", ->
   exec "coffee -cb lib/icui.coffee", (e) ->
     console.log e if e
-    exec "uglifyjs2 lib/strftime.js lib/icui.js -o js/jquery.icui.min.js -c -m", (e) ->
+    exec "uglifyjs lib/strftime.js lib/icui.js -o js/jquery.icui.min.js -c -m", (e) ->
       console.log e if e
       exec "rm lib/icui.js"
   exec "git checkout gh-pages", (e) ->
@@ -33,11 +33,11 @@ task 'build', ->
         console.log e if e
         exec "rm lib/icui.js"
 
-fs  = require("fs")     
+fs  = require("fs")
 task 'develop', ->
   http = require("http")
   url = require("url")
-  
+
   console.log "Listening on http://localhost:8888/ ..."
   http.createServer (request, response) ->
     uri = url.parse(request.url).pathname
@@ -57,7 +57,7 @@ task 'develop', ->
             <input type="hidden" class="icuiinp" />
             <input type="submit"/>
           </form>
-          
+
           <h1>Editing</h1>
           <form>
             <input type="hidden" class="icuiinp" value='{"start_date":"2013-06-23T17:30:00.000Z","rrules":[{"rule_type":"IceCube::WeeklyRule", "count": 3, "interval":1,"validations":{"offset_from_pascha": [-3]}}]}' />
